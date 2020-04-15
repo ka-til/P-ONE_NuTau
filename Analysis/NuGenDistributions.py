@@ -54,5 +54,4 @@ plt.xlabel("Cosine of the Zenith Angle")
 plt.savefig("NuTauZenithDistribution.pdf", dpi=200)
 plt.clf()
 
-position = np.concatenate((tauX, tauY, tauZ))
-np.savetxt('tauPositons.csv', position, delimiter=',')
+np.savetxt('tauPositions.csv', (tauX,tauY,tauZ))
