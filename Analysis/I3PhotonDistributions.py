@@ -85,7 +85,7 @@ plt.clf()
 
 plt.hist(wlen, bins = bins, density = False, log=True, histtype='step', label = 'NoWeights')
 plt.hist(wlen, bins = bins, density=False, log=True, histtype='step', weights=wScale, label='WithWeights')
-plt.legend()
+plt.legend(loc='best')
 plt.xlabel("Wavelength(m)")
 plt.title('I3Photon Wavelength')
 plt.savefig('/home/users/akatil/P-ONE/git/PONE_NuTau/Analysis/I3Photons_wavelength.pdf', dpi=200)
