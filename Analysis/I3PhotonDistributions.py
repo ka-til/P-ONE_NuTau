@@ -11,13 +11,13 @@ directory='/data/p-one/akatil/step_2_medium_water/'
 file = ([])
 for filename in os.listdir(directory):
     if filename.startswith("step_2"):
-        if os.path.getsize(directory+str(filename)) > 0 and :
+        if os.path.getsize(directory+str(filename)) > 0 and os.path.getsize(directory+str(filename)) < 2000000:
             file.append(filename)
 
 x, y, z, az, zen, weights, wlen = ([]), ([]), ([]), ([]), ([]), ([]), ([])
 
 #file = ['step_2_8_medium_water.i3.gz']
-
+print(len(file))
 for i in range(0, len(file)):
     print(i)
     pfile = dataio.I3File(directory+str(file[i]))
