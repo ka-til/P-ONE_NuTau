@@ -1,5 +1,6 @@
 from I3Tray import *
 from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator, tableio, hdfwriter
+from icecube.simprod import segments
 from icecube.icetray import I3Units, I3Frame
 from icecube.dataclasses import I3Particle
 from icecube.simclasses import I3MMCTrack
@@ -104,7 +105,7 @@ tray.Add("I3NeutrinoGenerator","generator",
 from icecube import PROPOSAL
 from os.path import expandvars
 
-propagators = sim_services.I3ParticleTypePropagatorServiceMap()
+#propagators = sim_services.I3ParticleTypePropagatorServiceMap()
 
 #mediadef=expandvars('$I3_BUILD/PROPOSAL/resources/mediadef')
 
@@ -114,26 +115,32 @@ propagators = sim_services.I3ParticleTypePropagatorServiceMap()
 		#cylinderHeight=1000,
 		#type=I3Particle.ParticleType.TauMinus)
 
-TauMinusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
-		config_file='/home/users/akatil/software/V06-01-02/build/PROPOSAL/resources/config_icesim.json',
+#TauMinusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
+		#config_file='/home/users/akatil/software/V06-01-02/build/PROPOSAL/resources/config_icesim.json',
 		#config_file='/cvmfs/icecube.opensciencegrid.org/py3-v4.1.0/RHEL_7_x86_64/metaprojects/combo/V00-00-02/PROPOSAL/resources/config_icesim.json',
-		final_stochastic_loss=I3Particle.ParticleType.TauMinus,
-		distance_to_propagate = 1e+20)
+		#final_stochastic_loss=I3Particle.ParticleType.TauMinus,
+		#distance_to_propagate = 1e+20)
 
-TauPlusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
-		config_file='/home/users/akatil/software/V06-01-02/build/PROPOSAL/resources/config_icesim.json',
+#TauPlusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
+		#config_file='/home/users/akatil/software/V06-01-02/build/PROPOSAL/resources/config_icesim.json',
 		#config_file='/cvmfs/icecube.opensciencegrid.org/py3-v4.1.0/RHEL_7_x86_64/metaprojects/combo/V00-00-02/PROPOSAL/resources/config_icesim.json',
-		final_stochastic_loss=I3Particle.ParticleType.TauPlus,
-		distance_to_propagate = 1e+20)
+		#final_stochastic_loss=I3Particle.ParticleType.TauPlus,
+		#distance_to_propagate = 1e+20)
 
-propagators[I3Particle.ParticleType.TauMinus] = TauMinusPropagator
-propagators[I3Particle.ParticleType.TauPlus] = TauPlusPropagator
+#propagators[I3Particle.ParticleType.TauMinus] = TauMinusPropagator
+#propagators[I3Particle.ParticleType.TauPlus] = TauPlusPropagator
 
-tray.Add('I3PropagatorModule', 'Tau_propagator',
-		PropagatorServices=propagators,
-		RandomService=randomService,
-		InputMCTreeName="I3MCTree_NuGen",
-        OutputMCTreeName="I3MCTree")
+#tray.Add('I3PropagatorModule', 'Tau_propagator',
+		#PropagatorServices=propagators,
+		#RandomService=randomService,
+		#InputMCTreeName="I3MCTree_NuGen",
+        #OutputMCTreeName="I3MCTree")
+
+tray.Add(segments.PropagateMuons, 'ParticlePropagators',
+         RandomService=randomService,
+         SaveState=True,
+         InputMCTreeName="I3MCTree_NuGen",
+         OutputMCTreeName="I3MCTree")
 
 #converts q frames?
 tray.Add("I3NullSplitter",
