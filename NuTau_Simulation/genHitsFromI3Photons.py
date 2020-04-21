@@ -3,13 +3,15 @@
 import sys
 sys.path.insert(0,'/home/users/dhilu/P_ONE_dvirhilu/src')
 
-from icecube import dataio, dataclasses, simclasses
+from icecube import dataio, dataclasses, simclasses, clsim
 from icecube.icetray import I3Units, OMKey, I3Frame
 from icecube.dataclasses import ModuleKey
 from experimentModelCode import FunctionClasses
 from simAnalysis.SimAnalysis import passFrame
+from os.path import expandvars
 import numpy as np
 import argparse
+#from RemoveLatePhotons_V5 import RemoveLatePhotons
 
 parser = argparse.ArgumentParser(description = "Takes I3Photons from step2 of the simulations and generates DOM hits")
 parser.add_argument('-n', '--runNum',  dest = 'runNum', help = "number assigned to this specific run", default = 0 )
@@ -49,7 +51,7 @@ geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File(outPath, 'w')
 
 # get DOM characteristics
-inFolder = '/home/users/dhilu/P_ONE_dvirhilu/DOMCharacteristics/' + args.DOMType + '/'
+inFolder = '/home/users/akatil/P-ONE/git/PONE_NuTau/DOM/' + args.DOMType + '/'
 filenameDomEff = 'DOMEfficiency.dat'
 filenameAngAcc = 'AngularAcceptance.dat'
 
@@ -63,6 +65,16 @@ geometry = cframe["I3Geometry"]
 geoMap = geometry.omgeo
 calibration = cframe["I3Calibration"]
 calMap = calibration.dom_cal
+
+DOMRadius = 0.16510*I3Units.m
+DOMOversizeFactor = 5.0
+icemodel_efficiency_factor = 1.0
+UnshadowedFraction = 1.0
+HoleIceParameterization = expandvars("$I3_BUILD/ice-models/resources/models/angsens/as.h2-50cm")
+domAcceptance = clsim.GetIceCubeDOMAcceptance(
+	                                domRadius = DOMRadius*DOMOversizeFactor,
+	                                efficiency=icemodel_efficiency_factor*UnshadowedFraction)
+domAngularSensitivity = clsim.GetIceCubeDOMAngularSensitivity(holeIce=HoleIceParameterization)
 
 def getSurvivalProbability(photon, omkey):
     if omkey in calMap:
@@ -85,37 +97,16 @@ def getSurvivalProbability(photon, omkey):
 
     return probAngAcc*probDOMAcc*photon.weight*relativeDOMEff
 
-def ProbabilityCorrection(photon, omkey):
-    if omkey in calMap:
-        domcal = calMap[omkey]
-        relativeDOMEff = domcal.relative_dom_eff * domcal.combined_spe_charge_distribution.compensation_factor
-    else:
-        relativeDOMEff = 1
-
-    domGeo = geoMap[omkey]
-    domDirection = domGeo.direction
-    photonDirection = photon.dir
-    dotProduct = photonDirection.x*domDirection.x + photonDirection.y*domDirection.y + photonDirection.z*domDirection.z
-    # photon coming in, direction coming out. Sign on dot product should be flipped
-    # directions are unit vectors already so cos_theta = -dotProduct (due to sign flip)
-    probAngAcc = angAcc.getValue(-dotProduct)
-
-    probDOMAcc = domEff.getValue(photon.wavelength)
-
-    print photon.weight, "Photon Weight"
-
-    return probAngAcc*probDOMAcc*(1/photon.weight)*relativeDOMEff
-
 def survived(photon,omkey):
     probability = getSurvivalProbability(photon, omkey)
     randomNumber = np.random.uniform()
 
-    print "probability before correction", probability
+    print "probability - ", probability
 
     if(probability > 1):
-        probability = ProbabilityCorrection(photon, omkey)
-        #print "probability after Correction", probability
-        #raise ValueError("Probability = " + str(probability) + " > 1. Most likely photon weights are too high")
+        #probability = ProbabilityCorrection(photon, omkey)
+        #print "probability - ", probability
+        raise ValueError("Probability = " + str(probability) + " > 1. Most likely photon weights are too high")
 
     if(probability > randomNumber):
         return True
@@ -151,12 +142,13 @@ while( infile.more() ):
             mcpeMap[omkey] = mcpeList
             succPhotonMap[modkey] = photonList
 
-    frame["MCPESeriesMap"] = mcpeMap
+    if len(mcpeMap) > 0:
+        frame["MCPESeriesMap"] = mcpeMap
 
     # only add frame to file if a hit was generated
-    if passFrame(frame, mcpeMap.keys(), int(args.hitThresh), int(args.domThresh), ):
+    #if passFrame(frame, mcpeMap.keys(), int(args.hitThresh), int(args.domThresh), ):
         frame["SuccPhotonMap"] = succPhotonMap
-        frame.Delete("I3Photons")
+        #frame.Delete("I3Photons")
         outfile.push(frame)
 
 outfile.close()
