@@ -71,9 +71,9 @@ tray.AddModule('I3Reader', 'reader',
             FilenameList = [options.GCDFILE, options.INFILE]
             )
 
-tray.AddModule(RemoveLatePhotons, "RemovePhotons",
-               InputPhotonSeries = "I3Photons",
-               TimeLimit = 1E5) #nanoseconds
+#tray.AddModule(RemoveLatePhotons, "RemovePhotons",
+               #InputPhotonSeries = "I3Photons",
+               #TimeLimit = 1E5) #nanoseconds
 
 tray.AddModule("I3GeometryDecomposer", "I3ModuleGeoMap")
 gcd_file = dataio.I3File(options.GCDFILE)
@@ -84,37 +84,38 @@ tray.AddSegment(clsim.I3CLSimMakeHitsFromPhotons, "makeHitsFromPhotons",
                 PhotonSeriesName="I3Photons",
                 MCPESeriesName="MCPESeriesMap",
                 RandomService=randomService,
-                DOMOversizeFactor=1.,
+                DOMOversizeFactor=5.0,
                 UnshadowedFraction=options.EFFICIENCY,
                 IceModelLocation = icemodel_path,
 #               UseHoleIceParameterization=holeice
 #               HoleIceParameterization=expandvars("$I3_SRC/ice-models/resources/models/angsens/%s"%options.HOLEICE),
                 GCDFile=gcd_file
-                )
+                ) #generates PEs
 
 mcpe_to_pmt = "MCPESeriesMap"
 mcpeout = mcpe_to_pmt
 
-tray.AddModule("PMTResponseSimulator","rosencrantz",
-    Input=mcpeout,
-    Output=mcpeout + "_weighted",
-    MergeHits=True,
+#tray.AddModule("PMTResponseSimulator","rosencrantz",
+    #Input=mcpeout,
+    #Output=mcpeout + "_weighted",
+    #MergeHits=True,
     #RandomServiceName=RandomService,
-    )
+    #) -----> Commented Out, generates pulses
 
-tray.AddModule("DOMLauncher", "guildenstern",
-    Input= mcpeout + "_weighted",
-    Output="InIceRawData_unclean",
-    UseTabulatedPT=True,
-    )
+#tray.AddModule("DOMLauncher", "guildenstern",
+    #Input= mcpeout + "_weighted",
+    #Output="InIceRawData_unclean",
+    #UseTabulatedPT=True,
+    #)
 
-tray.AddModule("I3DOMLaunchCleaning","launchcleaning")(
-       ("InIceInput","InIceRawData_unclean"),
-       ("InIceOutput","InIceRawData"),
-       ("FirstLaunchCleaning",False),
+#tray.AddModule("I3DOMLaunchCleaning","launchcleaning")(
+       #("InIceInput","InIceRawData_unclean"),
+       #("InIceOutput","InIceRawData"),
+       #("FirstLaunchCleaning",False),
 #       ("CleanedKeys",BadDoms)
-       )
-tray.AddModule(BasicDOMFilter, 'FilterNullInIce', Streams = [icetray.I3Frame.DAQ, icetray.I3Frame.Physics])
+       #) -----> Commented Out:
+
+tray.AddModule(BasicHitFilter, 'FilterNullInIce', Streams = [icetray.I3Frame.DAQ, icetray.I3Frame.Physics])
 
 tray.AddModule('Delete', 'delete_triggerHierarchy',
                Keys = ['I3TriggerHierarchy', 'TimeShift', 'CleanIceTopRawData'])
