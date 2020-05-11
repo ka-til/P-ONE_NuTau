@@ -2,7 +2,7 @@ from icecube import icetray, dataclasses
 from icecube.clsim import I3CLSimFlasherPulse, I3CLSimFlasherPulseSeries
 import genCustomFlashes
 import genIsotropicFlashes
-import iCones
+import genIsotropicFlashesSigma
 from I3Tray import I3Units
 
 from I3Tray import *
@@ -56,7 +56,7 @@ tray.AddModule("I3MCEventHeaderGenerator","gen_header",
                EventID=1,
                IncrementEventID=True)
 
-tray.AddModule(iCones.CustomFlashes, "customFlasher",
+tray.AddModule(genIsotropicFlashesSigma.CustomFlashes, "customFlasher",
 		       FlasherPulseSeriesName = "CustomFlashes",
                PhotonsPerPulse = 1.7e6,
                CandleNumber = options.CANDLENUMBER,
