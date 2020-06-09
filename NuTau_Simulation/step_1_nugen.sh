@@ -12,7 +12,7 @@ echo "cvfms ran"
 
 i3env=/home/users/akatil/software/V06-01-02/build/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/home/users/akatil/P-ONE/Tau_Propagation/NuTau.py
+script=/home/users/akatil/P-ONE/git/PONE_NuTau/NuTau_Simulation/step_1_neutrino_generator.py
 echo "Will use script: " $script
 
 NUMEVENTS=$1
