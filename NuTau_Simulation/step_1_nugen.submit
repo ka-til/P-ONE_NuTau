@@ -15,4 +15,4 @@ eMax = 6.7
 
 arguments = $(numEvents) $(eMin) $(eMax) $(Process)
 
-queue 2000
+queue 1
