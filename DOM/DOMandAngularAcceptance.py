@@ -36,6 +36,9 @@ for i in angle:
     #AngAcc.append(angAcc.getValue(i))
     AngAcc.append(domAngularSensitivity.GetValue(i))
 
+####Angular Acceptance of a DOM######
+#print(sum(AngAcc)*2.4/1000000)
+
 wavelength = np.linspace(3, 6, 10000)*1e-7
 DOMAcc = []
 for j in wavelength:
@@ -44,6 +47,7 @@ for j in wavelength:
 plt.plot(angle, AngAcc, '.')
 plt.xlabel('Angle')
 plt.ylabel('Angular Acceptance')
+plt.axhline(y=0.811397114255, linewidth=6, color='r')
 plt.title('Anglular Acceptance of IceCube DOM')
 plt.savefig('AngularAccIceCube.pdf', dpi=200)
 plt.clf()
