@@ -11,7 +11,7 @@ echo "cvfms ran"
 
 i3env=/home/users/akatil/software/V06-01-02/build/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/home/users/akatil/P-ONE/sim/clsim/step_2_clsim_setCrossE.py
+script=/home/users/akatil/P-ONE/git/PONE_NuTau/NuTau_Simulation/step_2_clsim.py
 echo "Will use script: " $script
 
 MEDIUM=$1
@@ -20,7 +20,7 @@ LOGMINENERGY=5.0
 LOGMAXENERGY=6.7
 
 echo "Medium used will be " $MEDIUM
-MEDIUMMODEL=/home/users/akatil/P-ONE/medium/STRAW_Andy_20200328_MattewEta
+MEDIUMMODEL=/home/users/akatil/P-ONE/git/PONE_NuTau/Medium/STRAW_Andy_20200328_MattewEta
 
 GCDFILE=/home/users/akatil/P-ONE/GCD_files/PONE_Phase1.i3.gz
 INNAME=tauDecay_${LOGMINENERGY}_${LOGMAXENERGY}_PONE_Phase1_${RUNNUM}.i3.gz
