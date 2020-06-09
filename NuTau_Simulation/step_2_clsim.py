@@ -121,7 +121,7 @@ tray.AddSegment(clsim.I3CLSimMakePhotons, 'goCLSIM',
 #                UseHoleIceParameterization=False, # Apply it when making hits!
                # HoleIceParameterization=expandvars("$I3_SRC/ice-models/resources/models/angsens/as.flasher_p1_0.30_p2_-1"),
                 DoNotParallelize=False,
-                DOMOversizeFactor=5.,
+                DOMOversizeFactor=1.,
                 UnshadowedFraction=options.EFFICIENCY, #normal in IC79 and older CLSim versions was 0.9, now it is 1.0
                 GCDFile=gcd_file,
                 ExtraArgumentsToI3CLSimModule={
