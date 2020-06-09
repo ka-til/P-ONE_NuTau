@@ -31,15 +31,13 @@ echo "OUTPUT FILE NAME : "$OUTNAME
 echo "OUTPUT FILE DIR  : "$OUTDIR
 echo "GCD FILE : "$GCDFILE
 
-$i3env python $script -o ${OUTDIR}/${OUTNAME} -i ${INDIR}/${INNAME} -r ${RUNNUM} -g ${GCDFILE} -m ${MEDIUMMODEL}
-
 script2=/home/users/akatil/P-ONE/sim/clsim/genHitsFromI3Photons.py
 
 GCDTYPE=PONE
 DOMTYPE=IceCube
 HITTHRESH=1
 DOMTHRESH=1
-OUTNAME=step_3_${RUNNUM}_medium_water_custom.i3.gz
+OUTNAME=step_3_${RUNNUM}_medium_water_custom_mDOM_katil.i3.gz
 OUTDIR=/data/p-one/akatil/step_3_medium_water/Custom
 
 echo "RUNNUM : "$RUNNUM

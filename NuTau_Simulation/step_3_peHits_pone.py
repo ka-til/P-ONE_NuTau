@@ -2,12 +2,14 @@
 
 import sys
 sys.path.insert(0,'/home/users/dhilu/P_ONE_dvirhilu/src')
+sys.path.insert(0,'/home/users/akatil/P-ONE/git/PONE_NuTau/Noise')
 
 from icecube import dataio, dataclasses, simclasses, clsim
 from icecube.icetray import I3Units, OMKey, I3Frame
 from icecube.dataclasses import ModuleKey
 from experimentModelCode import FunctionClasses
 from simAnalysis.SimAnalysis import passFrame
+from simNoise import addNoise
 from os.path import expandvars
 import numpy as np
 import argparse
