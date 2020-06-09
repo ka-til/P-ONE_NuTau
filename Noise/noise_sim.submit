@@ -1,0 +1,16 @@
+#SimulateNoise
+
+executable = noise_sim.sh
+log = /home/users/akatil/logFiles/Noise_step_4/step_4_$(Process)_medium_water_mDOM.log
+output = /home/users/akatil/logFiles/Noise_step_4/step_4_$(Process)_medium_water_mDOM.log
+error = /home/users/akatil/logFiles/Noise_step_4/step_4_$(Process)_medium_water_mDOM.log
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+
+runNum = $(Process)
+
+arguments = $(runNum)
+
+queue 2000
