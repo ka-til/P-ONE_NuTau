@@ -14,16 +14,13 @@ parser.add_argument('-i', '--infile', dest = 'infile', help= 'input file and pat
 parser.add_argument('-o', '--outfile', dest = 'outfile', help= 'output file and path')
 args = parser.parse_args()
 
-inPath = args.infile
-outPath = args.outfile
-
 tray = I3Tray()
 
 tray.AddModule('I3Reader', 'reader',
             FilenameList = [args.GCDFile, args.infile]
             )
 
-tray.AddModule(MCPEConverter.makeHits, "blah blah",
+tray.AddModule(MCPEConverter.makeHits, "generatingHits",
 		       AngularAcceptance = 0.811397114255,
                GCDFile = args.GCDFile,
                PropagatedPhotons = "I3Photons",
