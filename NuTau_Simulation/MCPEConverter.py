@@ -20,7 +20,7 @@ class makeHits(icetray.I3ConditionalModule):
                           0.811397114255)
         self.AddParameter("GCDFile",
                           "GCD to be simulated",
-                          dataio.I3File('/home/users/akatil/P-ONE/GCD_files/PONE_Phase1.i3.gz'))
+                          '/home/users/akatil/P-ONE/GCD_files/PONE_Phase1.i3.gz')
         self.AddParameter("PropagatedPhotons",
                           "I3MCTree containing the list of propagated I3Photons",
                           "I3Photons")
