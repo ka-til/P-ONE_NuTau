@@ -100,7 +100,7 @@ class makeHits(icetray.I3ConditionalModule):
                     mcpe = simclasses.I3MCPE()
                     #mcpe.id = dataclasses.I3ParticleID(photon.particleMajorID, photon.particleMinorID)
                     mcpe.npe = 1
-                    mcpe.time = photon.time #TODO: change to corrected time
+                    mcpe.time = photon.time + np.random.normal(0, 1.5) #smearing the time with random values from a gaussian with width 1.5ns
                     mcpeList.append(mcpe)
                     photonList.append(photon)
 
