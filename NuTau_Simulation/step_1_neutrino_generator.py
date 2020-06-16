@@ -14,17 +14,29 @@ parser.add_argument('-emax', '--energyMax', default = 8.0, help = "the maximum e
 parser.add_argument('-n', '--numEvents', help = "number of events produced by the simulation")
 parser.add_argument('-o', '--outfile', help="name and path of output file")
 parser.add_argument('-r', '--runNum', help="run Number")
+parser.add_argument("-a", "--ratios",default="1.0:1.0:1.0:1.0", help="ratio of input neutrino")
+parser.add_argument("-t", "--types",default="NuE:NuEBar:NuTau:NuTauBar", help="type of input neutrino")
 
 args = parser.parse_args()
+
+typeString = args.types
+ratioString = args.ratios
+
+typevec = typeString.split(":")
+ratiostvec = ratioString.split(":")
+ratiovec = []
+for ratio in ratiostvec:
+    ratiovec.append(float(ratio))
+
 emin = float(args.energyMin)
 emax = float(args.energyMax)
-print(emin, emax)
 numEvents = int(args.numEvents)
 runNum = int(args.runNum)
+print(emin, emax, ratiovec, typevec, numEvents, runNum)
 
 cylinder = [float(500), float(1000), float(0), float(0), float(0)]
-zenithMin = (90 - float(45)) * I3Units.deg
-zenithMax = (90 + float(45)) * I3Units.deg
+zenithMin = 0 * I3Units.deg
+zenithMax = 180 * I3Units.deg
 azimuthMin = 0 * I3Units.deg
 azimuthMax = 180 * I3Units.deg
 #gcd = "/home/users/jguthrie/oscnext/GCD_files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz"
@@ -32,8 +44,8 @@ gcd = "/home/users/akatil/P-ONE/GCD_files/PONE_Phase1.i3.gz"
 
 tray = I3Tray()
 
-args_ratios = "1:1"
-ratio = [float(ratio) for ratio in args_ratios.split(":")]
+#args_ratios = "1:1"
+#ratio = [float(ratio) for ratio in args_ratios.split(":")]
 
 #Random
 #randomService  = phys_services.I3GSLRandomService(123456)
@@ -71,8 +83,8 @@ tray.Add("I3NuGDiffuseSource","diffusesource",
                RandomService = randomService,
                SteeringName = "steering",
 		#NuFlavor = 'NuTau',
-               NuTypes = ['NuTau','NuTauBar'],
-               PrimaryTypeRatio = ratio,
+               NuTypes = typevec,#['NuTau','NuTauBar'],
+               PrimaryTypeRatio = ratiovec,
                GammaIndex = 2.19,
                EnergyMinLog = emin,
                EnergyMaxLog = emax,
