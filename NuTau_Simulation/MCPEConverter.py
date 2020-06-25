@@ -4,6 +4,7 @@ from icecube.dataclasses import ModuleKey
 from os.path import expandvars
 import numpy as np
 import argparse
+from SimFuncs import generateMCPEList
 
 class makeHits(icetray.I3ConditionalModule):
     """
@@ -62,55 +63,12 @@ class makeHits(icetray.I3ConditionalModule):
             	                                domRadius = DOMRadius*self.domOversizeFactor,
             	                                efficiency=self.relativeEfficieny)
 
-        def getSurvivalProbability(photon, omkey):
-
-            domGeo = geoMap[omkey]
-            domDirection = domGeo.direction
-            photonDirection = photon.dir
-            dotProduct = photonDirection.x*domDirection.x + photonDirection.y*domDirection.y + photonDirection.z*domDirection.z
-            # photon coming in, direction coming out. Sign on dot product should be flipped
-            # directions are unit vectors already so cos_theta = -dotProduct (due to sign flip)
-
-            probDOMAcc = domAcceptance.GetValue(photon.wavelength)
-
-            probAngAcc = self.angularAcceptance
-
-            return probAngAcc*probDOMAcc*photon.weight*self.relativeEfficieny
-
-
-        def survived(photon,omkey):
-            probability = getSurvivalProbability(photon, omkey)
-            randomNumber = np.random.uniform()
-
-            if(probability > 1):
-
-                raise ValueError("Probability = " + str(probability) + " > 1. Most likely photon weights are too high")
-
-            if(probability > randomNumber):
-                return True
-
-            return False
-
-        def generateMCPEList(photons, modkey):
-            omkey = OMKey(modkey.string, modkey.om, 0)
-            mcpeList = simclasses.I3MCPESeries()
-            photonList = []
-            for photon in photons:
-                if survived(photon,omkey):
-                    mcpe = simclasses.I3MCPE()
-                    #mcpe.id = dataclasses.I3ParticleID(photon.particleMajorID, photon.particleMinorID)
-                    mcpe.npe = 1
-                    mcpe.time = photon.time + np.random.normal(0, 1.5) #smearing the time with random values from a gaussian with width 1.5ns
-                    mcpeList.append(mcpe)
-                    photonList.append(photon)
-
-            return mcpeList, photonList
 
         photonDOMMap = frame[self.propagatedPhotons]
         mcpeMap = simclasses.I3MCPESeriesMap()
         succPhotonMap = simclasses.I3CompressedPhotonSeriesMap()
         for modkey in photonDOMMap.keys():
-            mcpeList, photonList = generateMCPEList(photonDOMMap[modkey], modkey)
+            mcpeList, photonList = generateMCPEList(geoMap, photonDOMMap[modkey], modkey, self.angularAcceptance, domAcceptance, self.relativeEfficieny)
             omkey = OMKey(modkey.string, modkey.om, 0)
             if len(mcpeList) > 0:
                 mcpeMap[omkey] = mcpeList
