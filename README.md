@@ -1,6 +1,6 @@
 # P-ONE NuTau Project
 
-Note - Branch BiGauss has the latest updates, yet tp be merged with the master
+Note - branch2-Sim/BiGauss has the latest updates, yet to be merged with the master
 
 ## Analysis
 
