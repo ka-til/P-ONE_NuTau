@@ -1,0 +1,12 @@
+#timeResiduals
+
+executable = vertexDistances.sh
+log = /home/users/akatil/logFiles/vertDiff.log
+output = /home/users/akatil/logFiles/vertDiff.out
+error = /home/users/akatil/logFiles/vertDiff.err
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+
+queue
