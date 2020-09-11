@@ -1,0 +1,17 @@
+# this is the step3 submit file for clsim on Illume
+
+executable = likelihood.sh
+log = /home/users/akatil/logFiles/analysis/25_30/likelihoodfit_$(min_charge)_$(max_charge).log
+output = /home/users/akatil/logFiles/analysis/25_30/likelihoodfit_$(min_charge)_$(max_charge).out
+error = /home/users/akatil/logFiles/analysis/25_30/likelihoodfit_$(min_charge)_$(max_charge).err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+requirements = CUDACapability
+
+runNum = $(Process)
+
+arguments = $INT(runNum) $(min_charge) $(max_charge)
+
+queue min_charge, max_charge from charge.txt
