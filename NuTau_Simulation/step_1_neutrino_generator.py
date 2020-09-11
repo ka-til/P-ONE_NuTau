@@ -99,7 +99,7 @@ tray.Add("I3NuGDiffuseSource","diffusesource",
 tray.Add("I3NuGInteractionInfoDifferentialFactory", "interaction",
                 RandomService = randomService,
                 SteeringName = "steering",
-                TablesDir = "/home/users/dhilu/P_ONE_dvirhilu/CrossSectionModels",
+                TablesDir = "/home/users/akatil/P-ONE/git/PONE_NuTau/NuTau_Simulation/CrossSectionModels",
                 CrossSectionModel = "csms_differential_v1.0"
               )
 
@@ -167,7 +167,7 @@ tray.Add("I3NullSplitter",
 #tray.Add("I3Writer", filename ='NuTau_test_energyRanges.i3',
 #        streams = [icetray.I3Frame.DAQ],)
 
-tray.Add("I3Writer", filename = args.outfile+'.i3.gz',
+tray.Add("I3Writer", filename = args.outfile,
         streams = [icetray.I3Frame.DAQ],)
 
 tray.Execute()
