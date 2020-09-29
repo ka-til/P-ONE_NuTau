@@ -30,7 +30,7 @@ Simulation and analysis files for noise. Move the files, once the code is finali
 
 Simulation chain for the P-ONE project in IceCube framework.
 
-Produce Neutrinos ------> Propagate Secondary Particles ------> Geneterate Photons ------> Make Hits ------> Add Noise
+Produce Neutrinos ------> Propagate Secondary Particles ------> Geneterate Photons ------> Make Hits ------> Add Noise ------> GeneratingRecoPulses
 
 ## TimeResiduals
 
