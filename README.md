@@ -1,5 +1,7 @@
 # P-ONE NuTau Project
 
+Note - branch2-Sim/BiGauss has the latest updates, yet to be merged with the master
+
 ## Analysis
 
 Contains code for analysis of the simulations.
