@@ -45,7 +45,8 @@ tray.AddModule('I3Reader', 'reader',
 tray.AddModule(curveFit.curveFit, "Double Peak Selector",
                omgeo = omgeo,
                InputMCPETree = "I3RecoPulses",
-               OutputMCPETree = "Parameters")
+               OutputMCPETree = "Parameters",
+               DebugMode = False)
 
 tray.AddModule("I3Writer","writer",
                #SkipKeys=SkipKeys,

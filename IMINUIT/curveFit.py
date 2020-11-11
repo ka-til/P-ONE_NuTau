@@ -28,6 +28,9 @@ class curveFit(icetray.I3ConditionalModule):
         self.AddParameter("OutputMCPETree",
                          "Output MCPETree name",
                          "Curvefit Parameters")
+        self.AddParameter("DebugMode",
+                          "Debug mode to check the output of minimizer",
+                          False)
         self.AddOutBox("OutBox")
 
     def Configure(self):
@@ -35,8 +38,11 @@ class curveFit(icetray.I3ConditionalModule):
         self.omgeo = self.GetParameter("omgeo")
         self.input = self.GetParameter("InputMCPETree")
         self.output = self.GetParameter("OutputMCPETree")
+        self.debug = self.GetParameter("DebugMode")
 
     def DAQ(self, frame):
+
+        print(dataio.I3File.frameno(frame))
 
         recoPulseMap = frame[self.input]
 
@@ -130,7 +136,7 @@ class curveFit(icetray.I3ConditionalModule):
             initial_biGauss = np.array([final_mean, 50, 5, max(entries_in_bins)])
             bnds_biGauss = ((min(bin_centers), maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)+10))
             soln_biGauss = minimize(log_likelihood_biGauss, initial_biGauss,
-                                        args=(entries_in_bins, bin_centers),
+                                        args=(entries_in_bins, bin_centers, self.debug),
                                         #method='TNC',
                                         bounds = bnds_biGauss)
 
@@ -141,7 +147,7 @@ class curveFit(icetray.I3ConditionalModule):
             bnds_doublePeak = ((min(bin_centers), final_mean-6), (0, time_window), (0, 10), (1, max(entries_in_bins)),
                                     (final_mean-6, maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)))
             soln_doublePeak = minimize(log_likelihood_doublePeak, initial_doublePeak,
-                                        args=(entries_in_bins, bin_centers),
+                                        args=(entries_in_bins, bin_centers, self.debug),
                                         #method='TNC',
                                         bounds=bnds_doublePeak)
 

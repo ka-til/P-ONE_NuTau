@@ -50,20 +50,22 @@ def double_peak(x, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
     b = np.append(b1, b2)
     return b1+b2
 
-def log_likelihood_biGauss(theta, n, x):
+def log_likelihood_biGauss(theta, n, x, debug):
     pos, wid, r, amp = theta
     model = biGauss(x, pos, wid, r, amp)
     L = model - (n*np.log(model))
-    #print('*****************One Peak***************')
-    #print(theta, np.sum(L))
+    if debug == True:
+        print('*****************One Peak*****************')
+        print(theta, np.sum(L))
     return np.sum(L)
 
-def log_likelihood_doublePeak(theta, n, x):
+def log_likelihood_doublePeak(theta, n, x, debug):
     pos1, wid1, r1, amp1, pos2, wid2, r2, amp2 = theta
     model = double_peak(x, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2)
     L = model - (n*np.log(model))
-    #print('*****************Double Peak***************')
-    #print(theta, np.sum(L))
+    if debug == True:
+        print('*****************Double Peak*****************')
+        print(theta, np.sum(L))
     return np.sum(L)
 
 def likelihood_ratio_doublePeak(x, n, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
