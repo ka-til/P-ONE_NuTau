@@ -29,8 +29,8 @@ class curveFit(icetray.I3ConditionalModule):
                          "Output MCPETree name",
                          "Curvefit Parameters")
         self.AddParameter("DebugMode",
-                          "Debug mode to check the output of minimizer",
-                          False)
+                          "Debug mode to check the output of minimizer. Pass a list of frames or ['all']",
+                          []) # You can pass ['all'] or a list of numbers, starting at 0
         self.AddOutBox("OutBox")
 
     def Configure(self):
@@ -39,9 +39,24 @@ class curveFit(icetray.I3ConditionalModule):
         self.input = self.GetParameter("InputMCPETree")
         self.output = self.GetParameter("OutputMCPETree")
         self.debug = self.GetParameter("DebugMode")
+        
+        self.frame_counter = 0
 
     def DAQ(self, frame):
 
+
+        
+        # Check if I want to debug this frame
+        debug_mode = False
+        if len(self.debug) > 0:
+            if self.debug[0] == 'all':
+                debug_mode = True
+            if self.frame_counter in self.debug:
+                debug_mode = True
+                print('Debugging frame ', self.frame_counter)
+        # Increase the frame counter
+        self.frame_counter += 1
+        
         print(dataio.I3File.frameno(frame))
 
         recoPulseMap = frame[self.input]
