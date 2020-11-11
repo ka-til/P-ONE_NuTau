@@ -28,9 +28,19 @@ class curveFit(icetray.I3ConditionalModule):
         self.AddParameter("OutputMCPETree",
                          "Output MCPETree name",
                          "Curvefit Parameters")
-        self.AddParameter("DebugMode",
-                          "Debug mode to check the output of minimizer. Pass a list of frames or ['all']",
-                          []) # You can pass ['all'] or a list of numbers, starting at 0
+
+        self.AddParameter("FrameList",
+                          "List of frame numbers to debug",
+                          [])
+
+        self.AddParameter("StringList",
+                          "List of string numbers to debug",
+                          [])
+
+        self.AddParameter("DOMList",
+                          "List of DOM numbers to debug",
+                          [])
+
         self.AddOutBox("OutBox")
 
     def Configure(self):
@@ -38,26 +48,15 @@ class curveFit(icetray.I3ConditionalModule):
         self.omgeo = self.GetParameter("omgeo")
         self.input = self.GetParameter("InputMCPETree")
         self.output = self.GetParameter("OutputMCPETree")
-        self.debug = self.GetParameter("DebugMode")
-        
+        self.frames = self.GetParameter("FrameList")
+        self.strings = self.GetParameter("StringList")
+        self.doms = self.GetParameter("DOMList")
+
         self.frame_counter = 0
 
     def DAQ(self, frame):
 
-
-        
-        # Check if I want to debug this frame
         debug_mode = False
-        if len(self.debug) > 0:
-            if self.debug[0] == 'all':
-                debug_mode = True
-            if self.frame_counter in self.debug:
-                debug_mode = True
-                print('Debugging frame ', self.frame_counter)
-        # Increase the frame counter
-        self.frame_counter += 1
-        
-        print(dataio.I3File.frameno(frame))
 
         recoPulseMap = frame[self.input]
 
@@ -65,6 +64,12 @@ class curveFit(icetray.I3ConditionalModule):
         doublePeak_valuesMap = dataclasses.I3MapKeyVectorDouble()
 
         for omkey in recoPulseMap.keys():
+
+            # Check if I want to debug this frame
+            if self.frame_counter in self.frames and omkey[0] in self.strings and omkey[1] in self.doms:
+                print('Frame number - '+ str(self.frame_counter), 'String number - ' + str(omkey[0]), 'DOM number - '+ str(omkey[1]))
+                debug_mode = True
+
             recoPulseList = recoPulseMap[omkey]
             recoPulse_timeList = np.array([recoPulse.time for recoPulse in recoPulseList])
             recoPulse_chargeList = np.array([recoPulse.charge for recoPulse in recoPulseList])
@@ -151,7 +156,7 @@ class curveFit(icetray.I3ConditionalModule):
             initial_biGauss = np.array([final_mean, 50, 5, max(entries_in_bins)])
             bnds_biGauss = ((min(bin_centers), maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)+10))
             soln_biGauss = minimize(log_likelihood_biGauss, initial_biGauss,
-                                        args=(entries_in_bins, bin_centers, self.debug),
+                                        args=(entries_in_bins, bin_centers, debug_mode),
                                         #method='TNC',
                                         bounds = bnds_biGauss)
 
@@ -162,7 +167,7 @@ class curveFit(icetray.I3ConditionalModule):
             bnds_doublePeak = ((min(bin_centers), final_mean-6), (0, time_window), (0, 10), (1, max(entries_in_bins)),
                                     (final_mean-6, maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)))
             soln_doublePeak = minimize(log_likelihood_doublePeak, initial_doublePeak,
-                                        args=(entries_in_bins, bin_centers, self.debug),
+                                        args=(entries_in_bins, bin_centers, debug_mode),
                                         #method='TNC',
                                         bounds=bnds_doublePeak)
 
@@ -197,5 +202,7 @@ class curveFit(icetray.I3ConditionalModule):
 
         frame[self.output+'_biGauss'] = biGauss_valuesMap
         frame[self.output+ '_doublePeak'] = doublePeak_valuesMap
+        # Increase the frame counter
+        self.frame_counter += 1
 
         self.PushFrame(frame)
