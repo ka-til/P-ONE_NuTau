@@ -11,6 +11,7 @@ from scipy import stats
 from scipy.optimize import minimize
 from scipy.stats.distributions import chi2
 import scipy
+from tabulate import tabulate
 
 '''
 
@@ -55,8 +56,9 @@ def log_likelihood_biGauss(theta, n, x, debug):
     model = biGauss(x, pos, wid, r, amp)
     L = model - (n*np.log(model))
     if debug == True:
-        print('*****************One Peak*****************')
-        print(theta, np.sum(L))
+        #print('*****************One Peak*****************')
+        print(tabulate([[pos, wid, r, amp, np.sum(L)]], tablefmt=u'fancy_grid',
+        headers=("pos", "wid", "r", "amp", "log likelihood")))
     return np.sum(L)
 
 def log_likelihood_doublePeak(theta, n, x, debug):
@@ -64,8 +66,9 @@ def log_likelihood_doublePeak(theta, n, x, debug):
     model = double_peak(x, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2)
     L = model - (n*np.log(model))
     if debug == True:
-        print('*****************Double Peak*****************')
-        print(theta, np.sum(L))
+        #print('*****************Double Peak*****************')
+        print(tabulate([[pos1, wid1, r1, amp1, pos2, wid2, r2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
+        headers=("pos1", "wid1", "r1", "amp1", "pos1", "wid1", "r1", "amp1", "log likelihood")))
     return np.sum(L)
 
 def likelihood_ratio_doublePeak(x, n, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
