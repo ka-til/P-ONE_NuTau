@@ -8,6 +8,7 @@ from iminuit import minimize
 from scipy.stats.distributions import chi2
 from likelihoodHelpers import log_likelihood_biGauss, log_likelihood_doublePeak
 from likelihoodHelpers import likelihood_ratio_doublePeak, likelihood_ratio_biGauss, biGauss, double_peak
+from likelihoodHelpers import log_likelihood_expGauss, log_likelihood_expDoublePeak, expGauss, expDoublePeak
 import scipy, csv
 from tabulate import tabulate
 
@@ -117,8 +118,8 @@ class curveFit(icetray.I3ConditionalModule):
             num_ampRatio = num/max(num)
 
             #removing bins which are <1/5 the max(num), removing the tails this way.
-            num_select = num[num_ampRatio > 0.2]
-            bin_centers_select = bin_centers[num_ampRatio > 0.2]
+            num_select = num[num_ampRatio > 0.1]
+            bin_centers_select = bin_centers[num_ampRatio > 0.1]
 
             '''
             Including continuity in the bins
@@ -155,11 +156,11 @@ class curveFit(icetray.I3ConditionalModule):
 
             nll = lambda *args: log_likelihood_biGauss(*args)
             initial_biGauss = np.array([final_mean, 50, 5, max(entries_in_bins)])
-            bnds_biGauss = ((min(bin_centers), maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)+10))
+            bnds_biGauss = ((min(bin_centers), maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)))
             if debug_mode == True:
                 print('bounds on single peak')
-                print(tabulate([(min(bin_centers), maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)+10)], tablefmt=u'fancy_grid'))
-            soln_biGauss = minimize(log_likelihood_biGauss, initial_biGauss,
+                print(tabulate([(min(bin_centers), maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
+            soln_biGauss = minimize(log_likelihood_expGauss, initial_biGauss,
                                         args=(entries_in_bins, bin_centers, debug_mode),
                                         #method='TNC',
                                         bounds = bnds_biGauss)
@@ -168,14 +169,14 @@ class curveFit(icetray.I3ConditionalModule):
 
             nll = lambda *args: log_likelihood_doublePeak(*args)
             initial_doublePeak = np.array([min(bin_centers)+10, 20, 1, max(entries_in_bins), final_mean, 20, 1, max(entries_in_bins)])
-            bnds_doublePeak = ((min(bin_centers), final_mean-6), (0, time_window), (0, 10), (1, max(entries_in_bins)),
-                                    (final_mean-6, maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins)))
+            bnds_doublePeak = ((min(bin_centers), final_mean-6), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                    (final_mean-6, maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)))
             if debug_mode == True:
                 print('bounds on double peak')
-                print(tabulate([(min(bin_centers), final_mean-6), (0, time_window), (0, 10), (1, max(entries_in_bins)),
-                                        (final_mean-6, maxBinCenter), (0, time_window), (0, 10), (1, max(entries_in_bins))], tablefmt=u'fancy_grid'))
+                print(tabulate([(min(bin_centers), final_mean-6), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                        (final_mean-6, maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
 
-            soln_doublePeak = minimize(log_likelihood_doublePeak, initial_doublePeak,
+            soln_doublePeak = minimize(log_likelihood_expDoublePeak, initial_doublePeak,
                                         args=(entries_in_bins, bin_centers, debug_mode),
                                         #method='TNC',
                                         bounds=bnds_doublePeak)
