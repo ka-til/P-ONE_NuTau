@@ -67,15 +67,18 @@ def log_likelihood_doublePeak(theta, n, x, debug):
     L = model - (n*np.log(model))
     if debug == True:
         #print('*****************Double Peak*****************')
-        print(tabulate([[pos1, wid1, r1, amp1, pos2, wid2, r2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
-        headers=("pos1", "wid1", "r1", "amp1", "pos1", "wid1", "r1", "amp1", "log likelihood")))
+        print(tabulate([[np.sum(L),pos1, wid1, r1, amp1, pos2, wid2, r2, amp2]]))
+        #print(tabulate([[pos1, wid1, r1, amp1, pos2, wid2, r2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
+        #headers=("pos1", "wid1", "r1", "amp1", "pos1", "wid1", "r1", "amp1", "log likelihood")))
     return np.sum(L)
 
 def expGauss(x, pos, wid, k, amp):
-    l = 1/(wid*k)
-    x_exp = l*(pos - x + (l*wid**2/2))
-    x_erf = (pos + l*wid**2 - x)/(np.sqrt(2)*wid)
-    val = amp * np.exp(x_exp) * (scipy.special.erfc(x_erf))
+    aux = (x-pos)/wid
+    val = amp*stats.exponnorm.pdf(aux,k)
+    #l = 1/(wid*k)
+    #x_exp = l*(pos - x + (l*wid**2/2))
+    #x_erf = (pos + l*wid**2 - x)/(np.sqrt(2)*wid)
+    #val = amp * np.exp(x_exp) * (scipy.special.erfc(x_erf))
     return val
 
 def expDoublePeak(x, pos1, wid1, k1, amp1, pos2, wid2, k2, amp2):
@@ -89,8 +92,9 @@ def log_likelihood_expGauss(theta, n, x, debug):
     L = model - (n*np.log(model))
     if debug == True:
         #print('*****************One Peak*****************')
-        print(tabulate([[pos, wid, k, amp, np.sum(L)]], tablefmt=u'fancy_grid',
-        headers=("pos", "wid", "k", "amp", "log likelihood")))
+        print("\t".join(["%0.5f" % x for x in [np.sum(L), pos, wid, k, amp]]))
+        #print(tabulate([[pos, wid, k, amp, np.sum(L)]], tablefmt=u'fancy_grid',
+        #headers=("pos", "wid", "k", "amp", "log likelihood")))
     return np.sum(L)
 
 def log_likelihood_expDoublePeak(theta, n, x, debug):
@@ -99,8 +103,9 @@ def log_likelihood_expDoublePeak(theta, n, x, debug):
     L = model - (n*np.log(model))
     if debug == True:
         #print('*****************Double Peak*****************')
-        print(tabulate([[pos1, wid1, k1, amp1, pos2, wid2, k2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
-        headers=("pos1", "wid1", "k1", "amp1", "pos2", "wid2", "k2", "amp2", "log likelihood")))
+        print("\t".join(["%0.5f" % x for x in [np.sum(L), pos1, wid1, k1, amp1, pos2, wid2, k2, amp2]]))
+        #print(tabulate([[pos1, wid1, k1, amp1, pos2, wid2, k2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
+        #headers=("pos1", "wid1", "k1", "amp1", "pos2", "wid2", "k2", "amp2", "log likelihood")))
     return np.sum(L)
 
 def likelihood_ratio_doublePeak(x, n, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
