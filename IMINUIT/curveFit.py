@@ -71,6 +71,8 @@ class curveFit(icetray.I3ConditionalModule):
             if self.frame_counter in self.frames and omkey[0] in self.strings and omkey[1] in self.doms:
                 print('Frame number - '+ str(self.frame_counter), 'String number - ' + str(omkey[0]), 'DOM number - '+ str(omkey[1]))
                 debug_mode = True
+            else:
+                debug_mode = False
 
             recoPulseList = recoPulseMap[omkey]
             recoPulse_timeList = np.array([recoPulse.time for recoPulse in recoPulseList])
@@ -118,8 +120,8 @@ class curveFit(icetray.I3ConditionalModule):
             num_ampRatio = num/max(num)
 
             #removing bins which are <1/5 the max(num), removing the tails this way.
-            num_select = num[num_ampRatio > 0.1]
-            bin_centers_select = bin_centers[num_ampRatio > 0.1]
+            num_select = num[num_ampRatio > 0.2]
+            bin_centers_select = bin_centers[num_ampRatio > 0.2]
 
             '''
             Including continuity in the bins
@@ -155,11 +157,11 @@ class curveFit(icetray.I3ConditionalModule):
             #Single Peak
 
             nll = lambda *args: log_likelihood_biGauss(*args)
-            initial_biGauss = np.array([final_mean, 50, 5, max(entries_in_bins)])
-            bnds_biGauss = ((min(bin_centers), maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)))
+            initial_biGauss = np.array([final_mean, time_window/2, 5, max(entries_in_bins)])
+            bnds_biGauss = ((min(bin_centers), maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)))
             if debug_mode == True:
                 print('bounds on single peak')
-                print(tabulate([(min(bin_centers), maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
+                print(tabulate([(min(bin_centers), maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
             soln_biGauss = minimize(log_likelihood_expGauss, initial_biGauss,
                                         args=(entries_in_bins, bin_centers, debug_mode),
                                         #method='TNC',
@@ -168,13 +170,13 @@ class curveFit(icetray.I3ConditionalModule):
             #Double Peak
 
             nll = lambda *args: log_likelihood_doublePeak(*args)
-            initial_doublePeak = np.array([min(bin_centers)+10, 20, 1, max(entries_in_bins), final_mean, 20, 1, max(entries_in_bins)])
-            bnds_doublePeak = ((min(bin_centers), final_mean-6), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)),
-                                    (final_mean-6, maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)))
+            initial_doublePeak = np.array([min(bin_centers)+10, time_window/2, 5, max(entries_in_bins), final_mean, time_window/2, 5, max(entries_in_bins)])
+            bnds_doublePeak = ((min(bin_centers), final_mean-6), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                    (final_mean-6, maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)))
             if debug_mode == True:
                 print('bounds on double peak')
-                print(tabulate([(min(bin_centers), final_mean-6), (0, time_window), (1, 20), (1, 2*max(entries_in_bins)),
-                                        (final_mean-6, maxBinCenter), (0, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
+                print(tabulate([(min(bin_centers), final_mean-6), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                        (final_mean-6, maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
 
             soln_doublePeak = minimize(log_likelihood_expDoublePeak, initial_doublePeak,
                                         args=(entries_in_bins, bin_centers, debug_mode),
@@ -209,6 +211,42 @@ class curveFit(icetray.I3ConditionalModule):
             # Define omkey:vector dictionary
             biGauss_valuesMap.update({omkey: dataclasses.I3VectorDouble(biGauss_values)})
             doublePeak_valuesMap.update({omkey: dataclasses.I3VectorDouble(doublePeak_values)})
+
+            if debug_mode==True:
+                print('Print message single peak -', soln_biGauss.message)
+                print('Print message double peak -', soln_doublePeak.message)
+                print('Log Likelihood Value single peak -', soln_biGauss.fun)
+                print('Log Likelihood Value double peak -', soln_doublePeak.fun)
+                import matplotlib.pyplot as plt
+                '''
+                (x, y) values for the fit
+                '''
+                #x = bin_centers
+                x = np.linspace(min(bin_centers)-30, max(bin_centers)+30, 1000)
+                #y_biGauss = biGauss(x, vals_single[1], vals_single[2], vals_single[3], vals_single[4])
+                #y_doublePeak = double_peak(x, vals[1], vals[2], vals[3], vals[4],
+                #                           vals[5], vals[6], vals[7], vals[8])
+
+                y_biGauss = expGauss(x, soln_biGauss.x[0],
+                                                soln_biGauss.x[1], soln_biGauss.x[2], soln_biGauss.x[3])
+                y_doublePeak = expDoublePeak(x, soln_doublePeak.x[0],
+                                            soln_doublePeak.x[1],soln_doublePeak.x[2],
+                                            soln_doublePeak.x[3], soln_doublePeak.x[4],
+                                            soln_doublePeak.x[5], soln_doublePeak.x[6],
+                                            soln_doublePeak.x[7])
+
+                plt.figure(figsize=(10,9))
+                _ = plt.hist(timestamps, bins=bins, weights=max_charge, histtype='step', linewidth = 5)
+                plt.plot(bin_centers, entries_in_bins, '*', c='k', label = 'Bins for fit', markersize=12, linewidth=6)
+                plt.plot(x, y_biGauss, '--', c = 'k', label = 'expGauss', linewidth=3)
+                plt.plot(x, y_doublePeak, '--', c = 'r', label = 'double expGauss', linewidth=3)
+                plt.axvline(x=soln_doublePeak.x[0], c='orange', label='Postion of First Gaussian')
+                plt.axvline(x=soln_doublePeak.x[4], c='g', label='Postion of Second Gaussian')
+                plt.axhline(y=soln_doublePeak.x[3], c='orange', label='Amplitude of First Gaussian')
+                plt.axhline(y=soln_doublePeak.x[7], c='g', label='Amplitude of Second gaussian')
+                plt.legend()
+                plt.xlabel('Time(ns)', fontsize = 16)
+                plt.title(str(omkey), fontsize=14)
 
         frame[self.output+'_biGauss'] = biGauss_valuesMap
         frame[self.output+ '_doublePeak'] = doublePeak_valuesMap
