@@ -100,7 +100,7 @@ def log_likelihood_expDoublePeak(theta, n, x, debug):
     if debug == True:
         #print('*****************Double Peak*****************')
         print(tabulate([[pos1, wid1, k1, amp1, pos2, wid2, k2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
-        headers=("pos1", "wid1", "r1", "amp1", "pos2", "wid2", "r2", "amp2", "log likelihood")))
+        headers=("pos1", "wid1", "k1", "amp1", "pos2", "wid2", "k2", "amp2", "log likelihood")))
     return np.sum(L)
 
 def likelihood_ratio_doublePeak(x, n, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
