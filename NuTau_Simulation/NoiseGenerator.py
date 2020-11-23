@@ -9,7 +9,7 @@ from SimFuncs import generateNoiseMCPEList
 
 class addNoise(icetray.I3ConditionalModule):
     """
-    Generate hits from I3Photons for P-ONE
+    Add Noise to the simulation as PEs
     """
 
     def __init__(self, context):

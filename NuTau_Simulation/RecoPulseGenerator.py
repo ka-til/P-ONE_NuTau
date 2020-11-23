@@ -27,7 +27,7 @@ class merge_recoPulse(icetray.I3ConditionalModule):
     def Configure(self):
 
         self.tShiftSeriesName = self.GetParameter("TimeShiftedMCPE")
-        self.recoPulseTreeName = self.GetParameter("RecoPulsesTreeName")
+        self.recoPulseTreeName = self.GetParameter("RecoPulseTreeName")
         self.mergeTime = self.GetParameter("MergeTime")
 
     def DAQ(self, frame):

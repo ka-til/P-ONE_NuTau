@@ -33,7 +33,7 @@ class combiningHits(icetray.I3ConditionalModule):
 
     def DAQ(self, frame):
 
-        mcpeMap = frame[self.mcpeSeriesMap]
+        mcpeMap = frame[self.mcpeSeriesName]
         mcpeOMKeys = mcpeMap.keys()
 
         noiseMap = frame[self.noiseSeriesName]

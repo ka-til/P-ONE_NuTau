@@ -34,7 +34,7 @@ numEvents = int(args.numEvents)
 runNum = int(args.runNum)
 print(emin, emax, ratiovec, typevec, numEvents, runNum)
 
-cylinder = [float(500), float(1000), float(0), float(0), float(0)]
+cylinder = [float(300), float(1300), float(0), float(0), float(0)]
 zenithMin = 0 * I3Units.deg
 zenithMax = 180 * I3Units.deg
 azimuthMin = 0 * I3Units.deg

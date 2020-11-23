@@ -1,0 +1,16 @@
+#SimulateRecoPulses
+
+executable = step_5_makeRecoPulses.sh
+log = /home/users/akatil/logFiles/RecoPulse_step_5/NuTau_NuE_20Events/step_5_$(Process)_medium_water_NuTau_NuE_100Events.log
+output = /home/users/akatil/logFiles/RecoPulse_step_5/NuTau_NuE_20Events/step_5_$(Process)_medium_water_NuTau_NuE_100Events.out
+error = /home/users/akatil/logFiles/RecoPulse_step_5/NuTau_NuE_20Events/step_5_$(Process)_medium_water_NuTau_NuE_100Events.err
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+
+runNum = $(Process)
+
+arguments = $(runNum)
+
+queue 2000

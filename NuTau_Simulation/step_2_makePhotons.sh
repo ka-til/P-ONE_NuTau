@@ -2,6 +2,7 @@
 date
 startsecond=$(date +%s)
 
+echo "I'm process id $$ on" `hostname`
 echo "Starting the clsim job"
 echo "Argument line : " $@
 
@@ -23,13 +24,13 @@ echo "Medium used will be " $MEDIUM
 MEDIUMMODEL=/home/users/akatil/P-ONE/git/PONE_NuTau/Medium/STRAW_Andy_20200328_MattewEta
 
 GCDFILE=/home/users/akatil/P-ONE/GCD_files/PONE_Phase1.i3.gz
-INNAME=tauDecay_${LOGMINENERGY}_${LOGMAXENERGY}_PONE_Phase1_${RUNNUM}.i3.gz
-INDIR=/data/p-one/akatil/step_1_medium_water
-OUTNAME=step_2_${RUNNUM}_medium_water.i3.gz
-OUTDIR=/data/p-one/akatil/step_2_medium_water
+INNAME=step_1_${RUNNUM}_PONE_Phase1_NuTau_NuE.i3.gz
+INDIR=/data/p-one/akatil/step_1_medium_water/NuTau_NuE_100Events_300Rad_1300H
+OUTNAME=step_2_${RUNNUM}_medium_water_NuTau_NuE.i3.gz
+OUTDIR=/data/p-one/akatil/step_2_medium_water/NuTau_NuE_100E_300R_1300H
 
-echo "INPUT FILE NAME : "$NUMEVENTS
-echo "INPUT FILE DIR : "$LOGMINENERGY":"$LOGMAXENERGY
+echo "INPUT FILE NAME : "$INNAME
+echo "INPUT FILE DIR : "$INDIR
 echo "OUTPUT FILE NAME : "$OUTNAME
 echo "OUTPUT FILE DIR  : "$OUTDIR
 echo "GCD FILE : "$GCDFILE

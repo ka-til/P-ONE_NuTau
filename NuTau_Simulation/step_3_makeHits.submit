@@ -1,18 +1,17 @@
 # this is the step3 submit file for clsim on Illume
 
 executable = step_3_makeHits.sh
-log = /home/users/akatil/logFiles/PE_step_3/step_3_$(Process)_medium_water_mDOM.log
-output = /home/users/akatil/logFiles/PE_step_3/step_3_$(Process)_medium_water_mDOM.out
-error = /home/users/akatil/logFiles/PE_step_3/step_3_$(Process)_medium_water_mDOM.err
+log = /home/users/akatil/logFiles/PE_step_3/NuTau_NuE_100E_300R_1300H/step_3_$(Process)_medium_water_NuTau_NuE_100Events.log
+output = /home/users/akatil/logFiles/PE_step_3/NuTau_NuE_100E_300R_1300H/step_3_$(Process)_medium_water_NuTau_NuE_100Events.out
+error = /home/users/akatil/logFiles/PE_step_3/NuTau_NuE_100E_300R_1300H/step_3_$(Process)_medium_water_NuTau_NuE_100Events.err
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT
 requestCpus = 1
 requestMemory = 8192
 requirements = CUDACapability
 
-medium=STRAW
 runNum = $(Process)
 
-arguments = $(medium) $INT(runNum)
+arguments = $INT(runNum)
 
-queue 2000
+queue 4000

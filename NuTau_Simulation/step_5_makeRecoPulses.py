@@ -43,7 +43,7 @@ tray.AddModule(TimeShifted.timeShift, "TimeShifter",
 
 tray.AddModule(RecoPulseGenerator.merge_recoPulse, "RecoPulseGenerator",
                TimeShiftedMCPE = "TimeShiftedMCPEMap",
-               RecoPulsesTreeNamee = "I3RecoPulses",
+               RecoPulseTreeName = "I3RecoPulses",
                MergeTime = 3)
 
 SkipKeys = ["MergedSeriesMap"]

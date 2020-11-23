@@ -53,7 +53,9 @@ def choose_file():
 
 #file = dataio.I3File('/data/p-one/akatil/step_3_medium_water/Custom/step_3_1000_medium_water_custom.i3.gz')
 filename = choose_file()
+print 'STRAW DATA file used -' + str(filename)
 timestamps = loadFile('/data/p-one/gaertner/2004_embla/unpacked/' + filename)
+
 
 tray = I3Tray()
 

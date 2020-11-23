@@ -50,7 +50,7 @@ def generateMCPEList(geoMap, photons, modkey, angularAcceptance, domAcceptance, 
             mcpe = simclasses.I3MCPE()
             #mcpe.id = dataclasses.I3ParticleID(photon.particleMajorID, photon.particleMinorID)
             mcpe.npe = 1
-            mcpe.time = photon.time + np.random.normal(0, 1.5) #smearing the time with random values from a gaussian with width 1.5ns
+            mcpe.time = photon.time #+ np.random.normal(0, 1.5) #smearing the time with random values from a gaussian with width 1.5ns
             mcpeList.append(mcpe)
             photonList.append(photon)
 
@@ -95,3 +95,22 @@ def generateNoiseMCPEList(modkey, medVal, timestamps):
 
     #print 'NoiseList', noiseList
     return noiseList
+
+'''
+Functions for RecoPulseGenerator.py
+
+Creating RecoPulses from MCPEs
+
+'''
+
+def generateRecoPulses(omkey, hits):
+    recoPulses = dataclasses.I3RecoPulseSeries()
+    for mcpe in hits:
+        recoPulse = dataclasse.I3RecoPulse()
+        recoPulse.time = mcpe.time + np.random.normal(0, 1.5) #smearing the time with random values from a gaussian with width 1.5ns
+        recoPulse.charge = mcpe.npe
+        #recoPulse.width = (Leave it blank for now!!!)
+
+        recoPulses.append(recoPulse)
+
+    return recoPulses

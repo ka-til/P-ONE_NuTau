@@ -3,6 +3,8 @@
 date
 startsecond=$(date +%s)
 
+echo "I'm process id $$ on" `hostname`
+
 echo "Starting the NuGen job"
 echo "Argument line : " $@
 
@@ -22,8 +24,8 @@ RUNNUM=$4
 
 echo "Number of events: " $NUMEVENTS
 
-OUTNAME=tauDecay_${LOGMINENERGY}_${LOGMAXENERGY}_PONE_Phase1_${RUNNUM}
-OUTDIR=/data/p-one/akatil/step_1_medium_water
+OUTNAME=step_1_${RUNNUM}_PONE_Phase1_NuTau_NuE.i3.gz
+OUTDIR=/data/p-one/akatil/step_1_medium_water/NuTau_NuE_100Events_300Rad_1300H
 
 echo "NUMBER OF EVENTS : "$NUMEVENTS
 echo "OUTPUT FILE NAME : "$OUTNAME
