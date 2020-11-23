@@ -18,14 +18,14 @@ geometry = cframe["I3Geometry"]
 omgeo = geometry.omgeo
 print('loaded geometry')
 
-f = open('/data/p-one/akatil/analysis/RecoPulses/RecoPulseFitInfo.csv', 'w')
+f = open('/data/p-one/akatil/analysis/RecoPulses/RecoPulseFitInfo_correcectedchi2_20201022.csv', 'w')
 
 with f:
     fnames = ['file', 'frame', 'lepton_type', 'DOM', 'string', 'binEntries_mean', 'success_biGauss', 'success_doublePeak',
              'biGauss_pos', 'biGauss_wid', 'biGauss_rat', 'biGauss_amp',
              'doublePeak_pos1', 'doublePeak_wid1', 'doublePeak_rat1', 'doublePeak_amp1',
              'doublePeak_pos2', 'doublePeak_wid2', 'doublePeak_rat2', 'doublePeak_amp2',
-             'area_data', 'area_biGauss_fit', 'area_doublePeak_fit', 'gof_biGauss', 'gof_doublePeak']
+             'area_data', 'area_biGauss_fit', 'area_doublePeak_fit', 'gof_biGauss', 'gof_doublePeak', 'dof_biGauss', 'dof_doublePeak']
     writer = csv.DictWriter(f, fieldnames=fnames)
     writer.writeheader()
 

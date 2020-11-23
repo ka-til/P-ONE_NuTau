@@ -67,12 +67,14 @@ def log_likelihood_doublePeak(theta, n, x):
     return np.sum(L)
 
 def likelihood_ratio_doublePeak(x, n, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2):
+    #Likelihood ratio for poisson distributions
     model = double_peak(x, pos1, wid1, r1, amp1, pos2, wid2, r2, amp2)
     val = model - n + (n*np.log(n/model))
     #print('log - ', n/model, 'n - ', n)
     return np.sum(val)
 
 def likelihood_ratio_biGauss(x, n, pos, wid, r, amp):
+    #Likelihood ratio for poisson distributions
     model = biGauss(x, pos, wid, r, amp)
     val = model - n + (n*np.log(n/model))
     #print('log - ', n/model, 'n - ', n)

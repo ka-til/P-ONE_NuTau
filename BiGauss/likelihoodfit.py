@@ -12,6 +12,11 @@ from scipy.stats.distributions import chi2
 
 import scipy
 
+parser = argparse.ArgumentParser(description = "Takes I3Photons from step2 of the simulations and generates DOM hits")
+parser.add_argument('-i', '--infile', dest = 'infile', help= 'input file and path')
+parser.add_argument('-o', '--outfile', dest = 'outfile', help= 'output file and path')
+args = parser.parse_args()
+
 def gaussian(x, pos, wid, amp):
     y = amp*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
     return y
@@ -76,13 +81,29 @@ print('loaded geometry')
 
 tau_timeDiff = ([])
 tau_pVal = ([])
+tau_LRR = ([])
+tau_wid1_ratio = ([])
+tau_wid2_ratio = ([])
+tau_amp1_ratio = ([])
+tau_amp2_ratio = ([])
 
 e_timeDiff = ([])
 e_pVal = ([])
+e_LRR = ([])
+e_wid1_ratio = ([])
+e_wid2_ratio = ([])
+e_amp1_ratio = ([])
+e_amp2_ratio = ([])
 
-for i in range(0, 1000):
+tau_wid_ratio_dp = ([])
+e_wid_ratio_dp = ([])
+tau_amp_ratio_dp = ([])
+e_amp_ratio_dp = ([])
+
+for i in range(0, 1):
     print('FILE NUMBER - ', i)
-    file = dataio.I3File('/data/p-one/akatil/step_4_medium_water/NuTau_NuE_20Events/step_4_'+str(i)+'_medium_water_custom_mDOM_noise.i3.gz')
+    #file = dataio.I3File('/data/p-one/akatil/step_4_medium_water/NuTau_NuE_20Events/step_4_'+str(i)+'_medium_water_custom_mDOM_noise.i3.gz')
+    file = dataio.I3File(str(args.infile))
 
     f = 1
     for frame in file:
@@ -171,7 +192,15 @@ for i in range(0, 1000):
             max_hitTimes = max_hitTimes[(z < 1.2)]
             new_mean = max_hitTimes.mean()
 
+            num_photons = len(max_hitTimes[max_hitTimes>0])
+
+            #if len(max_hitTimes) < 100:
+                #continue
+
             if len(max_hitTimes) < 10:
+                continue
+
+            if np.log10(num_photons) >= 3.0 or np.log10(num_photons) < 2.5:
                 continue
 
             '''
@@ -268,6 +297,13 @@ for i in range(0, 1000):
             '''
             timeDifference_doublePeak = soln_doublePeak.x[4] - soln_doublePeak.x[0]
             pVal_ratio = pVal_doublePeak/pVal_biGauss
+            LRR = LR_doublePeak/LR_biGauss
+            wid1_ratio = soln_doublePeak.x[1]/soln_biGauss.x[1]
+            wid2_ratio = soln_doublePeak.x[5]/soln_biGauss.x[1]
+            amp1_ratio = soln_doublePeak.x[3]/soln_biGauss.x[3]
+            amp2_ratio = soln_doublePeak.x[7]/soln_biGauss.x[3]
+            wid1_wid2 = soln_doublePeak.x[1]/soln_doublePeak.x[5]
+            amp1_amp2 = soln_doublePeak.x[3]/soln_doublePeak.x[7]
 
 
 
@@ -309,6 +345,14 @@ for i in range(0, 1000):
             if lepton.type == 15 or lepton.type == -15:
                 tau_timeDiff = np.append(tau_timeDiff, timeDifference_doublePeak)
                 tau_pVal = np.append(tau_pVal, pVal_ratio)
+                tau_LRR = np.append(tau_LRR, LRR)
+                tau_wid1_ratio = np.append(tau_wid1_ratio, wid1_ratio)
+                tau_wid2_ratio = np.append(tau_wid2_ratio, wid2_ratio)
+                tau_amp1_ratio = np.append(tau_amp1_ratio, amp1_ratio)
+                tau_amp2_ratio = np.append(tau_amp2_ratio, amp2_ratio)
+
+                tau_wid_ratio_dp = np.append(tau_wid_ratio_dp, wid1_wid2)
+                tau_amp_ratio_dp = np.append(tau_amp_ratio_dp, amp1_amp2)
                 #plt.title('E')
 
             '''
@@ -318,6 +362,17 @@ for i in range(0, 1000):
             if lepton.type == 11 or lepton.type == -11:
                 e_timeDiff = np.append(e_timeDiff, timeDifference_doublePeak)
                 e_pVal = np.append(e_pVal, pVal_ratio)
+                e_LRR = np.append(e_LRR, LRR)
+                e_wid1_ratio = np.append(e_wid1_ratio, wid1_ratio)
+                e_wid2_ratio = np.append(e_wid2_ratio, wid2_ratio)
+                e_amp1_ratio = np.append(e_amp1_ratio, amp1_ratio)
+                e_amp2_ratio = np.append(e_amp2_ratio, amp2_ratio)
+
+                e_wid_ratio_dp = np.append(e_wid_ratio_dp, wid1_wid2)
+                e_amp_ratio_dp = np.append(e_amp_ratio_dp, amp1_amp2)
+
+
+
                 #plt.title('Tau')
 
 
@@ -334,7 +389,29 @@ for i in range(0, 1000):
         f = f+1
 #print(tot_timeList)
 
-np.savetxt('/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/timeDiff_pvalue/20200727_timeDifference_tau.csv', tau_timeDiff, delimiter=',')
-np.savetxt('/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/timeDiff_pvalue/20200727_timeDifference_e.csv', e_timeDiff, delimiter=',')
-np.savetxt('/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/timeDiff_pvalue/20200727_pval_e.csv', e_pVal, delimiter=',')
-np.savetxt('/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/timeDiff_pvalue/20200727_pval_tau.csv', tau_pVal, delimiter=',')
+np.savetxt(str(args.outfile) + '_timeDifference_tau.csv', tau_timeDiff, delimiter=',')
+np.savetxt(str(args.outfile) + '_timeDifference_e.csv', e_timeDiff, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_pval_e.csv', e_pVal, delimiter=',')
+np.savetxt(str(args.outfile) + '_pval_tau.csv', tau_pVal, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_LRR_tau.csv', tau_LRR, delimiter=',')
+np.savetxt(str(args.outfile) + '_LRR_e.csv', e_LRR, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_wid1_tau.csv', tau_wid1_ratio, delimiter=',')
+np.savetxt(str(args.outfile) + '_wid1_e.csv', e_wid1_ratio, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_wid2_tau.csv', tau_wid2_ratio, delimiter=',')
+np.savetxt(str(args.outfile) + '_wid2_e.csv', e_wid2_ratio, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_amp1_tau.csv', tau_amp1_ratio, delimiter=',')
+np.savetxt(str(args.outfile) + '_amp1_e.csv', e_amp1_ratio, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_amp2_tau.csv', tau_amp2_ratio, delimiter=',')
+np.savetxt(str(args.outfile) + '_amp2_e.csv', e_amp2_ratio, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_wid1_wid2_tau.csv', tau_wid_ratio_dp, delimiter=',')
+np.savetxt(str(args.outfile) + '_wid1_wid2_e.csv', e_wid_ratio_dp, delimiter=',')
+
+np.savetxt(str(args.outfile) + '_amp1_amp2_tau.csv', tau_amp_ratio_dp, delimiter=',')
+np.savetxt(str(args.outfile) + '_amp1_amp2_e.csv', e_amp_ratio_dp, delimiter=',')

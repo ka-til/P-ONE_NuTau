@@ -1,0 +1,13 @@
+# Submit job on Illume
+
+executable = RunRecoPulseCsvFile.sh
+log = /home/users/akatil/logFiles/analysis/RecoPulses/likelihoodfit_csv.log
+output = /home/users/akatil/logFiles/analysis/RecoPulses/likelihoodfit_csv.out
+error = /home/users/akatil/logFiles/analysis/RecoPulses/likelihoodfit_csv.err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+requirements = CUDACapability
+
+queue

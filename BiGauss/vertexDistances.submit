@@ -1,9 +1,9 @@
 #timeResiduals
 
 executable = vertexDistances.sh
-log = /home/users/akatil/logFiles/vertDiff.log
-output = /home/users/akatil/logFiles/vertDiff.out
-error = /home/users/akatil/logFiles/vertDiff.err
+log = /home/users/akatil/logFiles/likelihoodfit.log
+output = /home/users/akatil/logFiles/likelihoodfit.out
+error = /home/users/akatil/logFiles/likelihoodfit.err
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 requestCpus = 1

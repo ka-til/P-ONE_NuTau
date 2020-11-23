@@ -12,7 +12,7 @@ echo "cvfms ran"
 
 i3env=/cvmfs/icecube.opensciencegrid.org/py3-v4.0.1/RHEL_7_x86_64/metaprojects/combo/stable/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/vertexDistances.py
+script=/home/users/akatil/P-ONE/git/PONE_NuTau/BiGauss/likelihoodfit.py
 echo "Will use script: " $script
 
 $i3env python $script

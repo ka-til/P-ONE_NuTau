@@ -25,7 +25,10 @@ def likelihoodfit(frame, omgeo):
     #e_pVal = ([])
     e_LRR = ([])
 
-
+    minimizer_fail = ([])
+    error_in_amp = ([])
+    weirdTimeDifferences = ([])
+    num_doms_selected = ([])
     #file = dataio.I3File(str(infile))
 
     mctree = frame["I3MCTree"]
@@ -34,24 +37,33 @@ def likelihoodfit(frame, omgeo):
 
     mcpeMap = frame['MCPESeriesMap']
     noiseMap = frame['NoiseSeriesMap']
+    recoPulseMap = frame['I3RecoPulses']
 
-    for omkey in mcpeMap.keys():
+    #for omkey in mcpeMap.keys():
+
+    for omkey in recoPulseMap.keys():
         oKey = omgeo.get(omkey)
 
         '''
         Obtaining the timeList
-        '''
+
         noise_mcpeList = noiseMap[omkey]
         noise_timeList = np.array([mcpe.time for mcpe in noise_mcpeList])
         mcpeList = mcpeMap[omkey]
         timeList = np.array([mcpe.time for mcpe in mcpeList])
         tot_timeList = np.append(timeList, noise_timeList)
 
+        '''
+
+        recoPulseList = recoPulseMap[omkey]
+        recoPulse_timeList = np.array([recoPulse.time for recoPulse in recoPulseList])
+        recoPulse_chargeList = np.array([recoPulse.charge for recoPulse in recoPulseList])
+
 
         '''
         Removing DOMs with hits less than 250 Hits
         '''
-        if len(tot_timeList) < 200:
+        if len(recoPulse_timeList) < 100:
             #print('less than 250 hits - 1')
             continue
 
@@ -60,16 +72,17 @@ def likelihoodfit(frame, omgeo):
         Calculating the mean and removing the tails
         '''
 
-        mean = tot_timeList.mean()
+        mean = recoPulse_timeList.mean()
 
-        select_time = tot_timeList[(tot_timeList > mean-50) & (tot_timeList < mean+50)]
+        select_time = recoPulse_timeList[(recoPulse_timeList > mean-50) & (recoPulse_timeList < mean+50)]
         new_mean = select_time.mean()
 
-        if len(select_time) < 50:
+        #if len(select_time) < 50:
             #print('less than 250 hits - 1')
-            continue
+            #continue
 
-        bins = np.arange(min(select_time), max(select_time), 1)
+        bins = np.arange(mean - 100, mean + 100, 1)
+        #bins = np.arange(min(select_time), max(select_time), 1)
         max_hitTimes = select_time[(select_time > (new_mean-40))&(select_time < (new_mean+40))]
 
 
@@ -88,6 +101,8 @@ def likelihoodfit(frame, omgeo):
         if len(max_hitTimes) < 50:
             #print('less than 250 hits - 2')
             continue
+
+        num_doms_selected = np.append(num_doms_selected, omkey)
 
         '''
         Histogramming the data from simulation
@@ -123,10 +138,26 @@ def likelihoodfit(frame, omgeo):
                                     method='Powell',
                                     bounds=bnds_doublePeak)
 
+
+        '''
+        Checking if there are any terrible fits
+        '''
+        amp1 = soln_doublePeak.x[3]
+        amp2 = soln_doublePeak.x[7]
+
+        #if amp1/amp2 < 1/4 and amp1/amp2 > 4:
+            #print('Removing terrible fits')
+
+        if amp1 < 0 or amp2 < 0:
+            error_in_amp = np.append(error_in_amp, omkey)
+            print('Error in amp')
+            continue
+
         '''
         Removing DOMs whose minimization is not successful
         '''
         if soln_biGauss.success == False or soln_doublePeak.success == False:
+            minimizer_fail = np.append(minimizer_fail, omkey)
             print('Removing DOMs whose minimization is not successful')
             continue
 
@@ -196,27 +227,31 @@ def likelihoodfit(frame, omgeo):
 
         if LRR >= 0.85 and LRR <=1.3:
             print('Time Difference before -', timeDifference_doublePeak)
-            if abs(timeDifference_doublePeak) < 100:
+            weirdTimeDifferences = np.append(weirdTimeDifferences, timeDifference_doublePeak)
+            timeDifference_doublePeak = 0.
+            #if abs(timeDifference_doublePeak) < 100:
                 #plt.figure(figsize=(10,9))
                 #_ = plt.hist(timestamps, bins=bins, histtype='step')
                 #plt.title(str(lepton.type)+' timeDifference < 100 ' + str(abs(LR_doublePeak/LR_biGauss)))
                 #plt.plot(x, y_biGauss, '--', c = 'r')
                 #plt.plot(x, y_doublePeak, '--', c = 'k')
                 #plt.axvline(final_mean, c = 'b')
-                timeDifference_doublePeak = 0.
+
 
 
         '''
         Checking if there are any terrible fits
-        '''
+
         amp1 = soln_doublePeak.x[3]
         amp2 = soln_doublePeak.x[7]
 
-        if amp1/amp2 < 1/4 and amp1/amp2 > 4:
-            print('Removing terrible fits')
+        #if amp1/amp2 < 1/4 and amp1/amp2 > 4:
+            #print('Removing terrible fits')
 
         if amp1 < 0 or amp2 < 0:
             print('Error in amp')
+
+        '''
 
         '''
         Separating the time difference calculated above and appending the values
@@ -241,9 +276,10 @@ def likelihoodfit(frame, omgeo):
             #e_pVal = np.append(e_pVal, pVal_ratio)
             e_LRR = np.append(e_LRR, twoDelLRR)
 
+
     if len(tau_LRR) == 0 and len(e_LRR) == 0:
         print('event rejected')
-        return 0, 0, 'rejected events'
+        return num_doms_selected, error_in_amp, minimizer_fail, weirdTimeDifferences, 0, 0, 0, 0, 'rejected events'
 
     if len(tau_LRR) > 0:
         tau_max_val = max(tau_LRR)
@@ -256,19 +292,29 @@ def likelihoodfit(frame, omgeo):
         e_max_val = -1e-9
 
     if tau_max_val > e_max_val:
+        tau_LRR_2 = tau_LRR[tau_LRR != tau_max_val]
+        #tau_max_val2 = max(tau_LRR[tau_LRR != tau_max_val])
+        #tau_LRR_3 = tau_LRR_2[tau_LRR_2 != tau_max_val2]
+        #tau_max_val3 = max(tau_LRR_2[tau_LRR_2 != tau_max_val2])
+
         tau_numMaxLLR = len(tau_LRR[tau_LRR == tau_max_val])
         tau_timeDiff_LR = tau_timeDiff[tau_LRR == tau_max_val]
         tau_max2DelLLR = ([])
         for j in range(0, tau_numMaxLLR):
             tau_max2DelLLR = np.append(tau_max2DelLLR, tau_max_val)
-            return tau_max2DelLLR, tau_timeDiff_LR, 'tau'
+            return num_doms_selected, error_in_amp, minimizer_fail, weirdTimeDifferences, tau_max2DelLLR, tau_timeDiff_LR, tau_LRR, tau_timeDiff, 'tau'
 
     if e_max_val > tau_max_val:
+        e_LRR_2 = e_LRR[e_LRR != e_max_val]
+        #e_max_val2 = max(e_LRR[e_LRR != e_max_val])
+        #e_LRR_3 = e_LRR_2[e_LRR_2 != e_max_val2]
+        #e_max_val3 = max(e_LRR_2[e_LRR_2 != e_max_val2])
+
         e_numMaxLLR = len(e_LRR[e_LRR == e_max_val])
         e_timeDiff_LR = e_timeDiff[e_LRR == e_max_val]
         e_max2DelLLR = ([])
         for j in range(0, e_numMaxLLR):
             e_max2DelLLR = np.append(e_max2DelLLR, e_max_val)
-            return e_max2DelLLR, e_timeDiff_LR, 'e'
+            return num_doms_selected, error_in_amp, minimizer_fail, weirdTimeDifferences, e_max2DelLLR, e_timeDiff_LR, e_LRR, e_timeDiff, 'e'
     else:
         print('they are equal?!')
