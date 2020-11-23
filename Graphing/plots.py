@@ -677,8 +677,8 @@ def plot_condition(condition, vals_single, vals, recoPulse_timeList, recoPulse_c
         num_ampRatio = num/max(num)
 
         #removing bins which are <1/5 the max(num), removing the tails this way.
-        num_select = num[num_ampRatio > 0.1]
-        bin_centers_select = bin_centers[num_ampRatio > 0.1]
+        num_select = num[num_ampRatio > 0.2]
+        bin_centers_select = bin_centers[num_ampRatio > 0.2]
 
         '''
         Including continuity in the bins
