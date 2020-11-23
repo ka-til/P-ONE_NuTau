@@ -152,92 +152,55 @@ class curveFit(icetray.I3ConditionalModule):
             '''
             Fitting bifurcated Gaussian and double bifurcated gaussian to
             the mcpe hit time distributions for both tau and electron.
-
-            initial_biGauss = np.array([final_mean, time_window/2, 1, max(entries_in_bins)])
-            initial_doublePeak = np.array([peak_time_boundary-1,
-                                           20,
-                                           1,
-                                           max(entries_in_bins),
-                                           peak_time_boundary+1,
-                                           20,
-                                           1,
-                                           max(entries_in_bins)])
-
-
             '''
 
-            init_k = np.linspace(1, 20, 1)
-            init_wid = np.linspace(0, time_window, 20)
+            initial_biGauss1 = np.array([final_mean, time_window/2, 5, max(entries_in_bins)])
+            intial_biGauss2 = np.array([final_mean, 50, 5, max(entries_in_bins)])
+            intial_biGauss_guesses = [initial_biGauss1, initial_biGauss2]
 
-            best_fcn_single = 1e12
-            soln_biGauss = 0
-            bnds_biGauss = [[min(bin_centers), maxBinCenter],
-                            [-time_window, time_window], # Let the width be negative
-                            [1, 20], # Restrict k to be positive, but only up to 20
-                            [0.1, 2*max(entries_in_bins)]] # Don't restrict the amplitude, it will vary greatly with K
+            solns_expGauss = []
+            log_likelihood_values = []
 
-            for iK in init_k:
-                for iwid in init_wid:
-                    initial_biGauss = np.array([final_mean, iwid, iK, max(entries_in_bins)])
+            #Single Peak
+            index = 0
+            for initial_guess in initial_biGauss_guesses:
 
-                    #Single Peak
-                    nll = lambda *args: log_likelihood_biGauss(*args)
-                    if debug_mode == True:
-                        print('Bounds on single peak')
-                        print(tabulate(bnds_biGauss,
-                               tablefmt=u'fancy_grid'))
-                        headers = [["llh","pos1", "wid1", "k1", "amp1"]]
-                        print(tabulate(headers))
-
-                    soln_single = minimize(log_likelihood_expGauss, initial_biGauss,
-                                            args=(entries_in_bins, bin_centers, debug_mode),
-                                            #method='TNC',
-                                            bounds = bnds_biGauss)
-
-                    if soln_single.fun < best_fcn_single:
-                        best_fcn_single = soln_single.fun
-                        soln_biGauss = soln_single
+                nll = lambda *args: log_likelihood_biGauss(*args)
+                initial_biGauss = initial_guess
+                bnds_biGauss = ((min(bin_centers), maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)))
+                if debug_mode == True:
+                    print('bounds on single peak')
+                    print(tabulate([(min(bin_centers), maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
+                soln_biGauss = minimize(log_likelihood_expGauss, initial_biGauss,
+                                        args=(entries_in_bins, bin_centers, debug_mode),
+                                        #method='TNC',
+                                        bounds = bnds_biGauss)
+                index += 1
 
             #Double Peak
-            peak_time_boundary = final_mean-6.
-            bnds_doublePeak = [[min(bin_centers), peak_time_boundary],
-                                bnds_biGauss[1],
-                                bnds_biGauss[2],
-                                bnds_biGauss[3],
-                                [peak_time_boundary, maxBinCenter],
-                                bnds_biGauss[1],
-                                bnds_biGauss[2],
-                                bnds_biGauss[3]]
+            initial_doublePeak1 = np.array([min(bin_centers)+10, 20, 5, max(entries_in_bins), final_mean, 20, 5, max(entries_in_bins)])
+            initial_doublePeak2 = np.array([min(bin_centers)+10, 20, 1, max(entries_in_bins), final_mean, 20, 1, max(entries_in_bins)])
+            initial_doublePeak2 = np.array([min(bin_centers)+10, time_window/2, 5, max(entries_in_bins), final_mean, time_window/2, 5, max(entries_in_bins)])
 
-            best_fcn_double = 1e12
-            soln_doublePeak = 0
+            initial_doublePeak_guesses = [initial_doublePeak1, initial_doublePeak2, initial_doublePeak3]
 
-            for iK in init_k:
-                for iwid in init_wid:
-                    initial_doublePeak = np.array([peak_time_boundary-1,
-                                                   iwid,
-                                                   iK,
-                                                   max(entries_in_bins),
-                                                   peak_time_boundary+1,
-                                                   iwid,
-                                                   iK,
-                                                   max(entries_in_bins)])
+            index = 0
+            for initial_guess in initial_doublePeak_guesses:
 
-                    nll = lambda *args: log_likelihood_doublePeak(*args)
-                    if debug_mode == True:
-                        print('Bounds on double peak')
-                        # Don't repeat existing stuff
-                        print(tabulate(bnds_doublePeak,
-                                tablefmt=u'fancy_grid'))
+                nll = lambda *args: log_likelihood_doublePeak(*args)
+                initial_doublePeak = initial_guess
+                bnds_doublePeak = ((min(bin_centers), final_mean-6), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                        (final_mean-6, maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)))
+                if debug_mode == True:
+                    print('bounds on double peak')
+                    print(tabulate([(min(bin_centers), final_mean-6), (1, time_window), (1, 20), (1, 2*max(entries_in_bins)),
+                                            (final_mean-6, maxBinCenter), (1, time_window), (1, 20), (1, 2*max(entries_in_bins))], tablefmt=u'fancy_grid'))
 
-                    soln_double = minimize(log_likelihood_expDoublePeak, initial_doublePeak,
-                                                args=(entries_in_bins, bin_centers, debug_mode),
-                                                #method='TNC',
-                                                bounds=bnds_doublePeak)
-
-                    if soln_double.fun < best_fcn_double:
-                        best_fcn_double = soln_double.fun
-                        soln_doublePeak = soln_double
+                soln_doublePeak = minimize(log_likelihood_expDoublePeak, initial_doublePeak,
+                                            args=(entries_in_bins, bin_centers, debug_mode),
+                                            #method='TNC',
+                                            bounds=bnds_doublePeak)
+                index += 1
 
             '''
             Calculating the Likelihood ratio for bifurcated gaussian
@@ -267,11 +230,6 @@ class curveFit(icetray.I3ConditionalModule):
             # Define omkey:vector dictionary
             biGauss_valuesMap.update({omkey: dataclasses.I3VectorDouble(biGauss_values)})
             doublePeak_valuesMap.update({omkey: dataclasses.I3VectorDouble(doublePeak_values)})
-
-            print('Print message single peak -', soln_biGauss.message)
-            print('Print message double peak -', soln_doublePeak.message)
-            print('Log Likelihood Value single peak -', soln_biGauss.fun)
-            print('Log Likelihood Value double peak -', soln_doublePeak.fun)
 
             if debug_mode==True:
                 print('Print message single peak -', soln_biGauss.message)
@@ -305,7 +263,6 @@ class curveFit(icetray.I3ConditionalModule):
                 plt.axvline(x=soln_doublePeak.x[4], c='g', label='Postion of Second Gaussian')
                 plt.axhline(y=soln_doublePeak.x[3], c='orange', label='Amplitude of First Gaussian')
                 plt.axhline(y=soln_doublePeak.x[7], c='g', label='Amplitude of Second gaussian')
-                #plt.axvline(x=peak_time_boundary,c='k')
                 plt.legend()
                 plt.xlabel('Time(ns)', fontsize = 16)
                 plt.title(str(omkey), fontsize=14)

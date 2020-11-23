@@ -20,7 +20,7 @@ RUNNUM=$1
 INNAME=step_5_${RUNNUM}_medium_water_custom_mDOM_recoPulse.i3.gz
 INDIR=/data/p-one/akatil/step_5_medium_water/NuTau_NuE_20Events
 OUTNAME=step_6_${RUNNUM}_parameters.i3.gz
-OUTDIR=/data/p-one/akatil/step_6_analysis/NuTau_NuE_20Events_update5
+OUTDIR=/data/p-one/akatil/step_6_analysis/NuTau_NuE_20Events_expGauss_update7
 
 echo "INPUT FILE NAME : "$INNAME
 echo "INPUT FILE DIR  : "$INDIR

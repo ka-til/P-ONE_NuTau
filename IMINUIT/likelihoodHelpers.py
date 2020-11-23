@@ -72,6 +72,8 @@ def log_likelihood_doublePeak(theta, n, x, debug):
     return np.sum(L)
 
 def expGauss(x, pos, wid, k, amp):
+    aux = (x-pos)/wid
+    #val = amp*stats.exponnorm.pdf(aux,k)
     l = 1/(wid*k)
     x_exp = l*(pos - x + (l*wid**2/2))
     x_erf = (pos + l*wid**2 - x)/(np.sqrt(2)*wid)
@@ -89,6 +91,7 @@ def log_likelihood_expGauss(theta, n, x, debug):
     L = model - (n*np.log(model))
     if debug == True:
         #print('*****************One Peak*****************')
+        #print("\t".join(["%0.5f" % x for x in [np.sum(L), pos, wid, k, amp]]))
         print(tabulate([[pos, wid, k, amp, np.sum(L)]], tablefmt=u'fancy_grid',
         headers=("pos", "wid", "k", "amp", "log likelihood")))
     return np.sum(L)
@@ -99,6 +102,7 @@ def log_likelihood_expDoublePeak(theta, n, x, debug):
     L = model - (n*np.log(model))
     if debug == True:
         #print('*****************Double Peak*****************')
+        #print("\t".join(["%0.5f" % x for x in [np.sum(L), pos1, wid1, k1, amp1, pos2, wid2, k2, amp2]]))
         print(tabulate([[pos1, wid1, k1, amp1, pos2, wid2, k2, amp2, np.sum(L)]], tablefmt=u'fancy_grid',
         headers=("pos1", "wid1", "k1", "amp1", "pos2", "wid2", "k2", "amp2", "log likelihood")))
     return np.sum(L)
