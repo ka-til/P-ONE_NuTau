@@ -15,6 +15,9 @@ def astroFlux(Energy):
     return (1.01*1e-18)*(Energy/(100*1000))**(-2.19)
 
 def simpleWeight(oneWeight, astro_flux, atm_flux, lepton):
+    '''
+    simple Weight is different for CC and NC events
+    '''
     if lepton.type == 16 or lepton.type == -16 or lepton.type == 12 or lepton.type == -12:
         return oneWeight*(astro_flux + atm_flux)
     else:
@@ -23,6 +26,7 @@ def simpleWeight(oneWeight, astro_flux, atm_flux, lepton):
 def NEvents():
     '''
     Note: File should be from step 1
+    Additional step because I mixed NuE and NuTaus during simulation
     '''
     tau_NEvents = []
     e_NEvents = []
