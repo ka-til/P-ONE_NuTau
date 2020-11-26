@@ -43,13 +43,15 @@ def NEvents():
 
     return len(tau_NEvents), len(e_NEvents)
 
-def weight(frame, NEvents):
+def weight(frame, nFiles):
     mctree = frame["I3MCTree"]
     neutrino = frame["NuGPrimary"]
     weightDict = frame["I3MCWeightDict"]
     oneWeight = weightDict['OneWeight']
     primary = mctree.primaries
     lepton = dataclasses.I3MCTree.first_child(mctree, primary[0].id)
+    nFiles = 2000
+    NEvents = weightDict['NEvents']
 
     flux = NuFlux.makeFlux('honda2006')
     atm_flux = flux.getFlux(neutrino.type, neutrino.energy, np.cos(neutrino.dir.zenith))
@@ -59,8 +61,11 @@ def weight(frame, NEvents):
     sim_weight = simpleWeight(oneWeight, f, atm_flux, lepton)
 
     if neutrino.type == 16 or neutrino.type == -16:
-        eventWeight = sim_weight*liveTime/NEvents[0]
-    if neutrino.type == 12 or neutrino.type == -12:
-        eventWeight = sim_weight*liveTime/NEvents[1]
+        eventWeight = sim_weight*liveTime/(NEvents/2)
+    if neutrino.type == 12:
+        eventWeight = sim_weight*liveTime/(NEvents[1]/4)
+    if neutrino.type == -12:
+        eventWeight = sim_weight*liveTime/(NEvents[1]/4)
+
 
     return eventWeight
