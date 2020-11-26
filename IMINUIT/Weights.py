@@ -22,7 +22,7 @@ def simpleWeight(oneWeight, astro_flux, atm_flux, lepton):
 
 def NEvents():
     '''
-    Note: File shoukd be from step 1
+    Note: File should be from step 1
     '''
     tau_NEvents = []
     e_NEvents = []
@@ -48,7 +48,7 @@ def weight(frame, NEvents):
     lepton = dataclasses.I3MCTree.first_child(mctree, primary[0].id)
 
     flux = NuFlux.makeFlux('honda2006')
-    atm_flux = flux.getFlux(dataclasses.I3Particle.ParticleType.NuEBar, 10000, 1)
+    atm_flux = flux.getFlux(neutrino.type, neutrino.energy, np.cos(neutrino.dir.zenith))
 
     liveTime = 365.24*24*60*60
     f = astroFlux(neutrino.energy)
