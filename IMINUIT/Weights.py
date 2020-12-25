@@ -8,7 +8,6 @@ def astroFlux(Energy):
     '''
     Values taken from: A measurement of the diffuse astrophysical
     muon neutrino flux using eight years of IceCube data.
-
     Link: https://inspirehep.net/files/99e2e4c9620a0bb4ddd15ff7749090b4
     '''
     #return (1.01*1e-18)*(Energy/(100*1000))**(-2.19)

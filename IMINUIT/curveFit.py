@@ -29,7 +29,11 @@ class curveFit(icetray.I3ConditionalModule):
 
         self.AddParameter("OutputMCPETree",
                          "Output MCPETree name",
-                         "Curvefit Parameters")
+                         "CurvefitParameters")
+
+        self.AddParameter("HitsInDOMsCut",
+                          "Cut in the num fits in DOMS",
+                          200)
 
         self.AddParameter("FrameList",
                           "List of frame numbers to debug",
@@ -50,6 +54,7 @@ class curveFit(icetray.I3ConditionalModule):
         self.omgeo = self.GetParameter("omgeo")
         self.input = self.GetParameter("InputMCPETree")
         self.output = self.GetParameter("OutputMCPETree")
+        self.cuts = self.GetParameter("HitsInDOMsCut")
         self.frames = self.GetParameter("FrameList")
         self.strings = self.GetParameter("StringList")
         self.doms = self.GetParameter("DOMList")
@@ -64,6 +69,7 @@ class curveFit(icetray.I3ConditionalModule):
 
         biGauss_valuesMap = dataclasses.I3MapKeyVectorDouble()
         doublePeak_valuesMap = dataclasses.I3MapKeyVectorDouble()
+        exitStatusMap = dataclasses.I3MapKeyVectorDouble()
 
         for omkey in recoPulseMap.keys():
 
@@ -81,7 +87,9 @@ class curveFit(icetray.I3ConditionalModule):
             '''
             Removing DOMs with hits less than 200 Hits
             '''
-            if sum(recoPulse_chargeList) < 200:
+            if sum(recoPulse_chargeList) < self.cuts:
+                exit_status = np.array([0])
+                exitStatusMap.update({omkey: dataclasses.I3VectorDouble(exit_status)})
                 continue
 
             '''
@@ -95,6 +103,8 @@ class curveFit(icetray.I3ConditionalModule):
             #print('SELECT CHARGE', select_charge, select_time, mean, recoPulse_timeList, recoPulse_chargeList)
 
             if len(select_time) < 10:
+                exit_status = np.array([1])
+                exitStatusMap.update({omkey: dataclasses.I3VectorDouble(exit_status)})
                 continue
 
             mean_select_time = sum(select_time*select_charge)/sum(select_charge)
@@ -102,6 +112,8 @@ class curveFit(icetray.I3ConditionalModule):
             max_charge = recoPulse_chargeList[(recoPulse_timeList > (mean_select_time-100))&(recoPulse_timeList < (mean_select_time+100))]
 
             if len(max_hitTimes) < 10:
+                exit_status = np.array([1])
+                exitStatusMap.update({omkey: dataclasses.I3VectorDouble(exit_status)})
                 continue
 
             #Shifting mean to zero
@@ -120,8 +132,8 @@ class curveFit(icetray.I3ConditionalModule):
             num_ampRatio = num/max(num)
 
             #removing bins which are <1/5 the max(num), removing the tails this way.
-            num_select = num[num_ampRatio > 0.2]
-            bin_centers_select = bin_centers[num_ampRatio > 0.2]
+            num_select = num[num_ampRatio > 0.0]
+            bin_centers_select = bin_centers[num_ampRatio > 0.0]
 
             '''
             Including continuity in the bins
@@ -136,7 +148,9 @@ class curveFit(icetray.I3ConditionalModule):
             Removing DOMs which don't have enough hits
             '''
 
-            if len(entries_in_bins) <= 9:
+            if len(entries_in_bins) < 9:
+                exit_status = np.array([2])
+                exitStatusMap.update({omkey: dataclasses.I3VectorDouble(exit_status)})
                 continue
 
 
@@ -145,9 +159,9 @@ class curveFit(icetray.I3ConditionalModule):
             else:
                 maxBinCenter = max(bin_centers)
 
-
+            exitStatusMap.update({omkey: dataclasses.I3VectorDouble(exit_status)})
             time_window = max(bin_centers) - min(bin_centers)
-
+            exit_status = np.array([3])
 
             '''
             Fitting bifurcated Gaussian and double bifurcated gaussian to
@@ -172,7 +186,7 @@ class curveFit(icetray.I3ConditionalModule):
             best_fcn_single = 1e12
             soln_biGauss = 0
             bnds_biGauss = [[min(bin_centers), maxBinCenter],
-                            [-time_window, time_window], # Let the width be negative
+                            [1, time_window], # Let the width be negative
                             [1, 20], # Restrict k to be positive, but only up to 20
                             [0.1, 2*max(entries_in_bins)]] # Don't restrict the amplitude, it will vary greatly with K
 
@@ -312,6 +326,7 @@ class curveFit(icetray.I3ConditionalModule):
 
         frame[self.output+'_biGauss'] = biGauss_valuesMap
         frame[self.output+ '_doublePeak'] = doublePeak_valuesMap
+        frame[self.output+ '_exitStatus'] = exitStatusMap
         # Increase the frame counter
         self.frame_counter += 1
 

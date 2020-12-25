@@ -41,11 +41,12 @@ tray = I3Tray()
 tray.AddModule('I3Reader', 'reader',
             FilenameList = [gcd_file, options.INFILE]
             )
-
-tray.AddModule(curveFit.curveFit, "Double Peak Selector",
-               omgeo = omgeo,
-               InputMCPETree = "I3RecoPulses",
-               OutputMCPETree = "Parameters")
+cut = 0
+tray.AddModule(curveFit.curveFit, "Double Peak Selector "+str(cut),
+                omgeo = omgeo,
+                InputMCPETree = "I3RecoPulses",
+                OutputMCPETree = "Parameters_"+str(cut),
+                HitsInDOMsCut = cut)
 
 tray.AddModule("I3Writer","writer",
                #SkipKeys=SkipKeys,

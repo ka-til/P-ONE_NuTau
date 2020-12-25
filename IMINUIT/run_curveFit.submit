@@ -1,9 +1,9 @@
 #AnalyzeRecoPulses
 
 executable = run_curveFit1.sh
-log = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_update7/step_6_$(Process)_parameters.log
-output = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_update7/step_6_$(Process)_parameters.out
-error = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_update7/step_6_$(Process)_parameters.err
+log = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_ampRat2/step_6_$(Process)_parameters.log
+output = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_ampRat2/step_6_$(Process)_parameters.out
+error = /home/users/akatil/logFiles/analysis/IMINUIT_recoPulses/NuTau_NuE_20Events_expGauss_ampRat2/step_6_$(Process)_parameters.err
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 requestCpus = 1
