@@ -532,7 +532,7 @@ class plots(object):
 
     def corner(self, log_time=False, log_wid=False, log_skew=False, log_amp=False, log_LLH=False, log_all=False,
                 range_time=[1e-12, 200], range_wid=[1e-12, 100], range_skew=[1e-12, 10], range_amp=[1e-12, 1e12], range_LLH=[1e-12, 1e6],
-                numBins_time=10, numBins_wid=10, numBins_skew=10, numBins_amp=100, numBins_LLH=100):
+                numBins_time=10, numBins_wid=10, numBins_skew=10, numBins_amp=100, numBins_LLH=100, saveFig=False, cut=200):
 
         '''
         Setting Range
@@ -641,6 +641,11 @@ class plots(object):
         blue_line = mlines.Line2D([], [], color='blue', label='e&NC')
 
         plt.legend(handles=[red_line,blue_line], bbox_to_anchor=(0., 1.0, 1., .0), loc=4)
+
+        if saveFig == True:
+            plt.savefig('/home/users/akatil/P-ONE/git/PONE_NuTau/ReportImages/Corner_Plot_'+str(cut)+'.pdf')
+            plt.clf()
+
         plt.show()
 
 def plot_condition(condition, vals_single, vals, recoPulse_timeList, recoPulse_chargeList, tDiff, file_num, frame_num, omkey, lRatio):
