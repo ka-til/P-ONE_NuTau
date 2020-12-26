@@ -94,6 +94,8 @@ The analysis uses IMINUIT minimizer to find the best fit parameters of the biGau
 
 ## Medium
 
+Simulating the optical properties of Cascadia basin, where P-ONE will be deployed.
+
 - makeMediumSTRAW.py - generates the parameters to simulate water. The scatter and absorption values at different wavelengths are taken from Andreas Gaertner's analysis being done using STRAW data. The <cos(theta)> is calculated using values taken from Antares paper and eta from Matthew Man's analysis of STRAW data. The files generated are stored in STRAW_Andy_20200328_MattewEta
 
 - STRAW_Andy_20200328_MattewEta is the folder containing properties of the medium to be fed into the simulation.
@@ -117,13 +119,17 @@ Code written for P-ONE
 - step_3_makeHits_pone.py - This takes information about the DOM( DOM acceptance and angular acceptance) used and area of the DOM to calculate the probability of registering a hit given a photon. Used the properties of IceCube mDOM. The properties of the mDOM are defined in MCPEConverter.py
 - step_4_addNoise.py - Inject noise using the I3Module NoiseGenerator.py . Took the noise from the STRAW data and injected it directly into the simulation.
 - step_5_makeRecoPulses.py - Here in the final step photoelectrons are converted into recopulses. Here hits within 3ns are merged. RecoPulseGenerator.py is used to generate the pulses.
+- SimFuncs.py - helper functions to simulate the hits, noise and recopulses.
+- .sh, .submit - these scripts can be used in Illume to generate multiple simulation files.
 
+## TimeResiduals
 
+Codes for plotting the time residuals to verify the properties of the water in simulation against the properties of cascadia basin.
 
 ## definingDOMs
 
 Scripts used to find the double peak signature using the center of gravity.
 
-## TimeResiduals
 
-Codes for plotting the time residuals to verify the properties of the water in simulation against the properties of cascadia basin.
+expGauss - exponentially modified gaussian
+BiGauss - bifurcated gaussian
